@@ -1,0 +1,5 @@
+django
+tmdbv3api
+undetected_chromedriver
+beautifulsoup4
+selenium

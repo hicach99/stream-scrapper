@@ -1,0 +1,102 @@
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools %}
+    {{ block.super }}
+    {% if user.is_superuser %}
+        {% if opts.verbose_name == 'movie' or opts.verbose_name == 'season' %}
+            <div id="toolbar">
+                <form id="load_page" method="post">
+                <div>
+                    {% csrf_token %}
+                    <label for="page_link"><img src="https://www.svgrepo.com/show/274175/window.svg" width="16" style="color: antiquewhite;" alt="page"></label>
+                    <input type="text" size="30" name="page_link" placeholder="Ex: https://example/page/1" id="page_link" />
+                    <input type="submit" value="Load {{opts.verbose_name_plural|capfirst}} From One Page" />
+                </div>
+                </form>
+            </div>
+            <div id="toolbar">
+            <form id="load_pages" method="post">
+                <div>
+                {% csrf_token %}
+                <label for="page_link"><img src="https://www.svgrepo.com/show/274235/documents-copy.svg" width="16" style="color: antiquewhite;" alt="pages"></label>
+                <input type="text" size="30" name="pages_link" placeholder="Ex: https://example/page/" id="pages_link" />
+                <input type="number" size="5" name="start" placeholder="Start page" id="start" />
+                <input type="number" size="5" name="end" placeholder="End page" value="" id="end" />
+                <select name="order" id="order">
+                    <option value="asc">ASC</option>
+                    <option value="desc">DESC</option>
+                </select>
+                <input type="submit" value="Load {{opts.verbose_name_plural|capfirst}} From Many Pages" />
+                </div>
+            </form>
+            </div>
+            <script>
+                var page_form = document.getElementById('load_page');
+                var pages_form = document.getElementById('load_pages');
+                function validateInput(input) {
+                    if (input === "") {
+                        return false; // input is empty
+                    }
+                    
+                    const number = Number(input);
+                    if (isNaN(number)) {
+                        return false; // input is not a valid number
+                    }
+                    
+                    if (number <= 0) {
+                        return false; // input is not greater than 0
+                    }
+                    
+                    return true; // input is valid
+                }
+                page_form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    var link = document.getElementById('page_link');
+                    if (link.value === '') {
+                        alert('Please fill in the required field.');
+                        return;
+                    }
+                    if (!link.value.includes('http')){
+                        alert('Please enter a valid page link.');
+                        return;
+                    }
+                    page_form.action = '/admin/app/page/{{opts.verbose_name}}/';
+                    page_form.submit();
+                });
+                pages_form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    var link = document.getElementById('pages_link');
+                    var start = document.getElementById('start');
+                    var end = document.getElementById('end');
+                    var order = document.getElementById("order");
+                    if (link.value === '') {
+                        alert('Please fill in the required field.');
+                        return;
+                    }
+                    if (!link.value.includes('http')){
+                        alert('Please enter a valid pages link.');
+                        return;
+                    }
+                    if(!validateInput(start.value)){
+                        alert('Please enter a valid start page number.');
+                        return;
+                    }
+                    if(!validateInput(end.value)){
+                        alert('Please enter a valid end page number.');
+                        return;
+                    }
+                    if(start.value>end.value){
+                        alert('Start page number should be smaller than End page number.');
+                        return;
+                    }
+                    if (!['asc','desc'].includes(order.value)) {
+                        alert('Invalid order.');
+                        return;
+                    }
+                    pages_form.action = '/admin/app/pages/{{opts.verbose_name}}/';
+                    pages_form.submit();
+                });
+            </script>
+        {% endif %}
+    {% endif %}
+{% endblock %}

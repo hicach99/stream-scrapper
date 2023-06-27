@@ -1,0 +1,118 @@
+{% extends 'admin/change_form.html' %}
+{% load functions %}
+
+{% block submit_buttons_bottom %}
+    {{ block.super }}
+    {% if user.is_superuser and original.source_link and original.id %}
+        {% if opts.verbose_name == 'movie' %}
+            <div class="submit-row">
+                <a href="{% url 'load_movie' original.id %}" class="default button" style="padding: 10px;">LOAD {{original.title}}</a>
+            </div>
+        {% endif %}
+        {% if opts.verbose_name == 'season' %}
+            <div class="submit-row">
+                <a href="{% url 'load_season' original.id %}" class="default button" style="padding: 10px;">LOAD {{original}}</a>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block field_sets %}
+    <div class="field-box">
+        <div class="row">
+            {% if original.poster_path %}<div class="col"><img src="{% get_image_path original.poster_path %}" height="300" style="border-radius: 10px;"></div> {% endif %}
+            {% if original.backdrop_path %}<div class="col"><img src="{% get_image_path original.backdrop_path %}" height="300" style="border-radius: 10px;"></div> {% endif %}
+            {% if original.profile_path %}<div class="col"><img src="{% get_image_path original.profile_path %}" height="300" style="border-radius: 10px;"></div> {% endif %}
+        </div>
+        {% if original.title %}<div class="row"><div class="col"><h4>{{original.title}}</h4></div></div>{% endif %}
+        {% if original.name %}<div class="row"><div class="col"><h4>{{original.name}}</h4></div></div>{% endif %}
+    </div>
+    {{ block.super }}
+    {% if opts.verbose_name == 'movie' or opts.verbose_name == 'episode' or opts.verbose_name == 'season' or opts.verbose_name == 'serie' %}
+        <fieldset class="module aligned ">
+            <div class="form-row field-version">
+                <div>
+                    <div class="flex-container">
+                        <label for="id_version">Version:</label>
+                        <span type="text" class="vTextField" id="id_version">{{original.version}}</span>
+                    </div>
+                </div>
+            </div>
+        </fieldset>    
+    {% endif %}
+    <style>
+        /* Row class */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 0 -15px; /* Adjust the negative margin as needed */
+        }
+
+        /* Column class */
+        .col {
+            padding: 0 15px; /* Adjust the padding as needed */
+            box-sizing: border-box;
+        }
+
+        /* Column width classes */
+        .col-1 {
+            flex-basis: 8.33333333%; /* Adjust the width as needed */
+            max-width: 8.33333333%;
+        }
+
+        .col-2 {
+            flex-basis: 16.66666667%;
+            max-width: 16.66666667%;
+        }
+
+        .col-3 {
+            flex-basis: 25%;
+            max-width: 25%;
+        }
+
+        .col-4 {
+            flex-basis: 33.33333333%;
+            max-width: 33.33333333%;
+        }
+
+        .col-5 {
+            flex-basis: 41.66666667%;
+            max-width: 41.66666667%;
+        }
+
+        .col-6 {
+            flex-basis: 50%;
+            max-width: 50%;
+        }
+
+        .col-7 {
+            flex-basis: 58.33333333%;
+            max-width: 58.33333333%;
+        }
+
+        .col-8 {
+            flex-basis: 66.66666667%;
+            max-width: 66.66666667%;
+        }
+
+        .col-9 {
+            flex-basis: 75%;
+            max-width: 75%;
+        }
+
+        .col-10 {
+            flex-basis: 83.33333333%;
+            max-width: 83.33333333%;
+        }
+
+        .col-11 {
+            flex-basis: 91.66666667%;
+            max-width: 91.66666667%;
+        }
+
+        .col-12 {
+            flex-basis: 100%;
+            max-width: 100%;
+        }
+    </style>
+{% endblock %}
