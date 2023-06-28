@@ -3,3 +3,4 @@ tmdbv3api
 undetected_chromedriver
 beautifulsoup4
 selenium
+mysql-connector-python==8.0.29

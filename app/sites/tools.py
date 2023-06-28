@@ -1,12 +1,13 @@
 import re
 from app.models import Movie, Serie
+from django.conf import settings
 
 def add_message_to_file(file_path, message):
     try:
-        with open(file_path, 'a') as file:
+        with open(settings.BASE_DIR / file_path, 'a') as file:
             file.write(message + '\n')
     except FileNotFoundError:
-        with open(file_path, 'w') as file:
+        with open(settings.BASE_DIR / file_path, 'w') as file:
             file.write(message + '\n')
     except Exception as e:
         print(e)
