@@ -4,6 +4,7 @@ use_external_database=True
 external_database_info={
     'ENGINE': 'mysql.connector.django',
     'HOST': '127.0.0.1',
+    'PORT': 3306,
     'NAME': 'jnanbmnl_db',  
     'USER': 'jnanbmnl_db',  
     'PASSWORD': ']a@o14q]6H,L',  
