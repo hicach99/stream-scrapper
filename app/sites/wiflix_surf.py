@@ -153,7 +153,7 @@ def load_series_page(driver : webdriver.Chrome,page_link : str):
                         serie=Serie.objects.get(id=tmdb_serie.id)
                     except:
                         serie=Serie.objects.create(id=tmdb_serie.id)
-                    if serie.title.lower() != title and serie.original_title.lower() != title:
+                    if serie.title.lower() != title.lower() and serie.original_title.lower() != title.lower():
                         try:
                             OtherTitle.objects.get(serie=serie,title=title)
                         except:
