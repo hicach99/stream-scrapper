@@ -1,5 +1,5 @@
 # DATABASE info
-use_external_database=True
+use_external_database=False
 use_host_user=True
 ## if  use_external_database is True we use external_database_info else we create sqlite database 'db.sqlite3'
 host_user='cpasmieux'+'_' # None
