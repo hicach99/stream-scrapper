@@ -12,7 +12,7 @@ def init_driver():
     driver = uc.Chrome(
         use_subprocess=use_subprocess,
         headless=run_in_background,
-        driver_executable_path=settings.BASE_DIR / chromedriver
+        driver_executable_path= str(settings.BASE_DIR / chromedriver)
     )
     return driver
 
