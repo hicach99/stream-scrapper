@@ -1,7 +1,11 @@
 import re
+import traceback
 from app.models import Movie, Serie
 from django.conf import settings
 
+def get_exception_details(e : Exception):
+    tb = traceback.extract_tb(e.__traceback__)
+    return tb[-1].filename, tb[-1].lineno
 def add_message_to_file(file_path, message):
     try:
         with open(settings.BASE_DIR / file_path, 'a') as file:

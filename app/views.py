@@ -4,6 +4,7 @@ from django.contrib import messages
 from app.sites import french_stream_bio, wiflix_surf
 from app.sites.scrapper import init_driver
 from app.models import Movie, Season, Serie
+from app.sites.tools import get_exception_details
 
 scrapper={
     'wiflix.surf':{
@@ -48,7 +49,7 @@ def load_movie(request,id):
         scrapper[website]['load_movie'](driver,movie)
         messages.success(request, f'{movie} was loaded successful!')
     except Exception as e:
-        messages.error(request, f'{movie} was not loaded due to: {e}')
+        messages.error(request, f'{movie} was not loaded due to: {e} in {get_exception_details(e)}')
     driver.quit()
     return redirect('admin:app_movie_change', object_id=id)
 
@@ -60,11 +61,12 @@ def load_season(request,id):
         scrapper[website]['load_season'](driver,season)
         messages.success(request, f'{season} was loaded successful!')
     except Exception as e:
-        messages.error(request, f'{season} was not loaded due to: {e}')
+        messages.error(request, f'{season} was not loaded due to: {e} in {get_exception_details(e)}')
     driver.quit()
     return redirect('admin:app_season_change', object_id=id)
 
 def load_page(request,model):
+    driver=None
     try:
         if request.method=='POST':
             page_link=request.POST['page_link']
@@ -78,11 +80,12 @@ def load_page(request,model):
         else:
             raise Exception("method was not POST method")
     except Exception as e:
-        messages.error(request, f'{model}s page was not loaded due to: {e}')
-    driver.quit()
+        messages.error(request, f'{model}s page was not loaded due to: {e} in {get_exception_details(e)}')
+    if driver:driver.quit()
     return redirect(f'admin:app_{model}_changelist')
 
 def load_pages(request,model):
+    driver=None
     try:
         if request.method=='POST':
             pages_link,start,end,asc=request.POST['pages_link'],int(request.POST['start']),int(request.POST['end']),True if request.POST['order'] == 'asc' else False
@@ -96,6 +99,6 @@ def load_pages(request,model):
         else:
             raise Exception("method was not POST method")
     except Exception as e:
-        messages.error(request, f'{model}s pages was not loaded due to: {e}')
-    driver.quit()
+        messages.error(request, f'{model}s pages was not loaded due to: {e} in {get_exception_details(e)}')
+    if driver:driver.quit()
     return redirect(f'admin:app_{model}_changelist')
