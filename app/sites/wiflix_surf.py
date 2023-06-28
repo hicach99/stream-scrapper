@@ -1,4 +1,4 @@
-from app.models import Episode, Movie, Link, Season, Serie
+from app.models import Episode, Movie, Link, OtherTitle, Season, Serie
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -105,15 +105,26 @@ def load_movies_page(driver : webdriver.Chrome,page_link : str):
     movies_names=[item.get_text().strip() for item in movies_items]
     for i, title in enumerate(movies_names):
         year=get_year(driver,movies_links[i])
-        tmdb_movie=search_select_movie(title,year)
-        if tmdb_movie:
+        mm=Movie.search_by_title(title,year)
+        searched_movie=mm[0] if mm else None
+        if not searched_movie:
+            tmdb_movie=search_select_movie(title,year)
+        if searched_movie or tmdb_movie:
             try:
-                try:
-                    movie=Movie.objects.get(id=tmdb_movie.id)
-                except:
-                    movie=Movie.objects.create(id=tmdb_movie.id,source_link=movies_links[i])
+                if not searched_movie:
+                    try:
+                        movie=Movie.objects.get(id=tmdb_movie.id)
+                    except:
+                        movie=Movie.objects.create(id=tmdb_movie.id,source_link=movies_links[i])
+                    if movie.title.lower() != title.lower() and movie.original_title.lower() != title.lower():
+                        try:
+                            OtherTitle.objects.get(movie=movie,title=title)
+                        except:
+                            OtherTitle.objects.create(movie=movie,title=title)
+                else:
+                    movie=searched_movie
                 load_movie_links(driver, movie,True)
-                print(f'[+] the movie: {title} was loaded successfully')
+                print(f'[+] the movie {i+1}: {title} was loaded successfully')
             except Exception as e:
                 add_message_to_file('failed_page_movies.txt',f'{title}: {movies_links[i]} - {e}')
                 print(f'[-] error loading the movie: {title} due to: {e}')
@@ -131,13 +142,24 @@ def load_series_page(driver : webdriver.Chrome,page_link : str):
     series_names=[item.get_text().strip() for item in series_items]
     series_seasons=[int(item.get_text().strip().split(' ')[1].split('\n\t')[0]) for item in html.select(page_item_box_season)]
     for i, title in enumerate(series_names):
-        tmdb_serie=search_select_serie(title,series_seasons[i])
-        if tmdb_serie:
+        ss=Serie.search_by_title(title,series_seasons[i])
+        searched_serie=ss[0] if ss else None
+        if not searched_serie:
+            tmdb_serie=search_select_serie(title,series_seasons[i])
+        if searched_serie or tmdb_serie:
             try:
-                try:
-                    serie=Serie.objects.get(id=tmdb_serie.id)
-                except:
-                    serie=Serie.objects.create(id=tmdb_serie.id)
+                if not searched_serie:
+                    try:
+                        serie=Serie.objects.get(id=tmdb_serie.id)
+                    except:
+                        serie=Serie.objects.create(id=tmdb_serie.id)
+                    if serie.title.lower() != title and serie.original_title.lower() != title:
+                        try:
+                            OtherTitle.objects.get(serie=serie,title=title)
+                        except:
+                            OtherTitle.objects.create(serie=serie,title=title)
+                else:
+                    serie=searched_serie
                 try:
                     season=Season.objects.get(serie=serie,season_number=series_seasons[i])
                 except:
@@ -151,11 +173,11 @@ def load_series_page(driver : webdriver.Chrome,page_link : str):
                         o_season.source_link=s['link']
                         o_season.save()
                         load_season_links(driver,o_season)
-                        print(f'[+] the serie: {title} season {o_season.season_number} was loaded successfully')
+                        print(f'[+] the serie {i+1}-s{o_season.season_number}: {title} season {o_season.season_number} was loaded successfully')
                     except:
                         add_message_to_file('failed_page_seasons.txt',f'{title} season {o_season.season_number}: {o_season.source_link} - {e}')
                         print(f'[-] error loading the serie: {title} season {o_season.season_number}  due to: {e}')
-                print(f'[+] the serie: {title} season {series_seasons[i]} was loaded successfully')
+                print(f'[+] the serie {i+1}: {title} season {series_seasons[i]} was loaded successfully')
             except Exception as e:
                 add_message_to_file('failed_page_seasons.txt',f'{title} season {series_seasons[i]}: {series_links[i]} - {e}')
                 print(f'[-] error loading the serie: {title} season {series_seasons[i]}  due to: {e}')

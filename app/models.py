@@ -190,6 +190,17 @@ class Movie(models.Model):
     def get_tmdb(cls,id:int):
         tmdb.api_key = random.choice(TmdbApi.api_keys)
         return movie_getter.details(id)
+    @classmethod
+    def search_by_title(cls, query, year=None):
+        queryset = cls.objects.filter(
+            models.Q(other_titles__title__icontains=query) |
+            models.Q(title__icontains=query) |
+            models.Q(original_title__icontains=query)
+        ).distinct()
+        if year and year.isdigit():
+            year = int(year)
+            queryset = queryset.filter(release_date__year=year)
+        return queryset
 class Serie(models.Model):
     id = models.IntegerField(primary_key=True)
     source_link = models.CharField(max_length=512,blank=True,null=True)
@@ -268,6 +279,16 @@ class Serie(models.Model):
         if vf: return 'VF'
         if vostfr: return 'VOSTFR'
         return '-'
+    @classmethod
+    def search_by_title(cls, query, season_number : int=None):
+        queryset = cls.objects.filter(
+            models.Q(other_titles__title__icontains=query) |
+            models.Q(title__icontains=query) |
+            models.Q(original_title__icontains=query)
+        ).distinct()
+        if season_number:
+            queryset = queryset.filter(number_of_seasons__gte=season_number)
+        return queryset
 class Season(models.Model):
     id = models.IntegerField(primary_key=True)
     source_link = models.CharField(max_length=512,blank=True,null=True)
@@ -356,3 +377,9 @@ class Genre(models.Model):
                 genre.series.add(serie)
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+class OtherTitle(models.Model):
+    title = models.CharField(max_length=255,blank=True,null=True)
+    movie = models.ForeignKey(Movie, related_name='other_titles', on_delete=models.CASCADE, null=True, blank=True)
+    serie = models.ForeignKey(Serie, related_name='other_titles', on_delete=models.CASCADE, null=True, blank=True)
+    def __str__(self):
+        return self.title

@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.contrib import messages
 from app.sites import french_stream_bio, wiflix_surf
 from app.sites.scrapper import init_driver
@@ -18,7 +18,7 @@ scrapper={
             'season':wiflix_surf.load_series_pages,
         },
     },
-    'french-stream.bio':{
+    'french-stream.gg':{
         'load_movie': french_stream_bio.load_movie_links,
         'load_season': french_stream_bio.load_season_links,
         'load_page': {
