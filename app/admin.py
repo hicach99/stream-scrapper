@@ -136,5 +136,3 @@ admin.site.register(Movie, MovieAdmin)
 admin.site.register(Season, SeasonAdmin)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Episode, EpisodeAdmin)
-
-
