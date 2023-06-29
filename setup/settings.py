@@ -9,7 +9,7 @@ if use_external_database:
     host_user = 'cpasmieux'+'_' # None
     database_info = {
         'ENGINE': 'mysql.connector.django',
-        'HOST': '67.211.211.194',
+        'HOST': 'localhost',#'67.211.211.194',
         'PORT': 3306,
         'NAME': (host_user if use_host_user else '') + 'streaming_db' ,  
         'USER': (host_user if use_host_user else '') + 'streaming_db',  

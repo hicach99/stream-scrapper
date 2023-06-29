@@ -34,6 +34,7 @@ def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
         driver.get(movie.source_link)
         wait = WebDriverWait(driver, duration)
         wait_until_title_contains(driver, wait)
+        print('[+] driver loaded successfully')
     html = BeautifulSoup(driver.page_source, 'html.parser')
     movie_version=validate_link(html.select_one('.mov-list  li:nth-child(7) .mov-desc').get_text())
     movie_quality=html.select_one('.mov-list  li:nth-child(8) .mov-desc').get_text()

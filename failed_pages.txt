@@ -1,0 +1,2 @@
+page 1:https://wiflix.surf/film-en-streaming/page/1 - (-1, 'MySQL Connection not available.', None)
+page 1:https://wiflix.surf/serie-en-streaming/page/1 - (1049, "1049 (42000): Unknown database 'cpasmieux_streaming_db'", '42000')
