@@ -38,6 +38,7 @@ def detect_website(link:str):
     return parts[-2]+'.'+parts[-1]
 
 def test(request):
+    return redirect('/admin')
     a=Serie.get_tmdb(46952)
     return HttpResponse([a], content_type='application/json')
 

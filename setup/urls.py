@@ -10,6 +10,6 @@ urlpatterns = [
     path('admin/app/movie/<int:id>/load/', load_movie,name='load_movie'),
     path('admin/app/season/<int:id>/load/', load_season,name='load_season'),
     path('admin/', admin.site.urls),
-    path('', include('app.urls')),
+    path('', include('app.urls'), name='admin'),
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
 ]

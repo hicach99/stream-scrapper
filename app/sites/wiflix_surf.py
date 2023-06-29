@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from app.sites.scrapper import wait_until_title_contains
 from app.sites.tools import add_message_to_file, search_select_movie, search_select_serie
 
-duration=50
+duration=100
 
 validated_versions=['truefrench','subfrench','vostfr','french','fr','vf']
 vf_versions=['truefrench','french', 'vf', 'fr']
@@ -175,7 +175,7 @@ def load_series_page(driver : webdriver.Chrome,page_link : str):
                         o_season.save()
                         load_season_links(driver,o_season)
                         print(f'[+] the serie {i+1}-s{o_season.season_number}: {title} season {o_season.season_number} was loaded successfully')
-                    except:
+                    except Exception as e:
                         add_message_to_file('failed_page_seasons.txt',f'{title} season {o_season.season_number}: {o_season.source_link} - {e}')
                         print(f'[-] error loading the serie: {title} season {o_season.season_number}  due to: {e}')
                 print(f'[+] the serie {i+1}: {title} season {series_seasons[i]} was loaded successfully')
