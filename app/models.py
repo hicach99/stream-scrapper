@@ -1,8 +1,27 @@
-import random
+import random, requests
 from django.db import models
 from tmdbv3api import TMDb, Movie as Tmdb_Movie,TV as Tmdb_Serie
 from app.initial_data import load_initial_data
 
+def get_tv_show_keywords(tv_id):
+    url = f"https://api.themoviedb.org/3/tv/{tv_id}/keywords"
+    params = {"api_key": random.choice(api_keys)}
+    
+    response = requests.get(url, params=params)
+    response_json = response.json()
+    
+    result = {
+        "id": response_json["id"],
+        "results": []
+    }
+    
+    for keyword in response_json["results"]:
+        result["results"].append({
+            "name": keyword["name"],
+            "id": keyword["id"]
+        })
+    
+    return result
 class TmdbApi(models.Model):
     key = models.CharField(max_length=255,unique=True,default='')
     original_images_url='https://image.tmdb.org/t/p/original'
@@ -62,9 +81,9 @@ class Cast(models.Model):
                     person.save()
                 cast=cls.objects.create(person=person, character=c.character)
             cast.save()
-            if movie:
+            if movie and movie not in cast.movies.all():
                 cast.movies.add(movie)
-            elif serie:
+            elif serie and serie not in cast.series.all():
                 cast.series.add(serie)
     def __str__(self):
         return self.person.name+' As '+self.character
@@ -87,7 +106,8 @@ class Director(models.Model):
                         person.save()
                     director=cls.objects.create(person=person)
                 director.save()
-                director.movies.add(movie)
+                if movie not in director.movies.all():
+                    director.movies.add(movie)
             elif serie:
                 try:
                     director=cls.objects.get(person__id=d.id)
@@ -99,7 +119,8 @@ class Director(models.Model):
                         person.save()
                     director=cls.objects.create(person=person)
                 director.save()
-                director.series.add(serie)
+                if serie not in director.series.all():
+                    director.series.add(serie)
     def __str__(self):
         return self.person.name
 
@@ -152,6 +173,7 @@ class Movie(models.Model):
             super().save(*args, **kwargs)
             curr_movie=Movie.objects.get(id=self.id)
             Genre.save_if_not_exists(movie.genres,movie=curr_movie)
+            Keyword.save_if_not_exists(movie.keywords.keywords,movie=curr_movie)
             Cast.save_if_not_exists(movie.casts.cast,movie=curr_movie)
             Director.save_if_not_exists(movie.casts.crew,movie=curr_movie)
             Video.save_if_not_exists(movie.videos.results,movie=curr_movie)
@@ -239,6 +261,7 @@ class Serie(models.Model):
             super().save(*args, **kwargs)
             curr_serie=Serie.objects.get(id=self.id)
             Genre.save_if_not_exists(serie.genres,serie=curr_serie)
+            Keyword.save_if_not_exists(get_tv_show_keywords(self.id)['results'],serie=curr_serie)
             Season.save_if_not_exists(curr_serie,serie.seasons)
             Cast.save_if_not_exists(serie.credits.cast,serie=curr_serie)
             Director.save_if_not_exists(serie.created_by,serie=curr_serie)
@@ -359,9 +382,9 @@ class Genre(models.Model):
             except:
                 genre = cls.objects.create(id=genre_id,name=genre_name)
                 genre.save()
-            if movie:
+            if movie and movie not in genre.movies.all():
                 genre.movies.add(movie)
-            elif serie:
+            elif serie and serie not in genre.series.all():
                 genre.series.add(serie)
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -371,3 +394,23 @@ class OtherTitle(models.Model):
     serie = models.ForeignKey(Serie, related_name='other_titles', on_delete=models.CASCADE, null=True, blank=True)
     def __str__(self):
         return self.title
+class Keyword(models.Model):
+    name = models.CharField(max_length=255,blank=True,null=True)
+    movie = models.ForeignKey(Movie, related_name='keywords', on_delete=models.CASCADE, null=True, blank=True)
+    serie = models.ForeignKey(Serie, related_name='keywords', on_delete=models.CASCADE, null=True, blank=True)
+    def __str__(self):
+        return self.name
+    @classmethod
+    def save_if_not_exists(cls, keywords_array, movie=None,serie=None):
+        for keyword_data in keywords_array:
+            keyword_name = keyword_data['name']
+            if movie:
+                try:
+                    cls.objects.get(name=keyword_name,movie=movie)
+                except:
+                    cls.objects.create(name=keyword_name,movie=movie)
+            else:
+                try:
+                    cls.objects.get(name=keyword_name,serie=serie)
+                except:
+                    cls.objects.create(name=keyword_name,serie=serie)

@@ -3,6 +3,11 @@ from django.contrib import admin
 from .models import *
 from django.utils.html import format_html
 
+# Keyword Start
+class KeywordInline(admin.TabularInline):
+    model = Keyword
+    extra = 1
+    fields = ('name',)
 # OtherTitle Start
 class OtherTitleInline(admin.TabularInline):
     model = OtherTitle
@@ -32,7 +37,7 @@ class VideoMovieInline(admin.TabularInline):
     extra = 0
 class MovieAdmin(admin.ModelAdmin):
     search_fields = ['id','title','original_title']
-    inlines = [OtherTitleInline, GenreMovieInline, DirectorMovieInline,CastMovieInline,VideoMovieInline,linkInline]
+    inlines = [OtherTitleInline, GenreMovieInline, KeywordInline, DirectorMovieInline,CastMovieInline,VideoMovieInline,linkInline]
     list_display = ('title','release_date','created_on','display_poster_path',)  # Add any other fields you want to display
     
     def display_poster_path(self, obj):
@@ -86,7 +91,7 @@ class SeasonSerieInline(admin.TabularInline):
     
 class SerieAdmin(admin.ModelAdmin):
     search_fields = ['id','title','original_title']
-    inlines = [OtherTitleInline, GenreSerieInline,SeasonSerieInline,DirectorSerieInline,CastSerieInline,VideoSerieInline]
+    inlines = [OtherTitleInline, GenreSerieInline, KeywordInline, SeasonSerieInline,DirectorSerieInline,CastSerieInline,VideoSerieInline]
     list_display = ('title','release_date','created_on','display_poster_path',)  # Add any other fields you want to display
     readonly_fields = ('display_poster_path',)
     def display_poster_path(self, obj):
