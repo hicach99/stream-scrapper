@@ -19,7 +19,7 @@ def get_year(driver,link):
     wait = WebDriverWait(driver, duration)
     wait_until_title_contains(driver, wait)
     html = BeautifulSoup(driver.page_source, 'html.parser')
-    year_element=html.select_one('div.mov-label:contains("Date de sortie:") + div.mov-desc')
+    year_element=html.select_one('div.mov-label:-soup-contains("Date de sortie:") + div.mov-desc')
     if year_element:
         return year_element.get_text().strip()
     return None
@@ -40,11 +40,11 @@ def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
         print('[+] driver loaded successfully')
     html = BeautifulSoup(driver.page_source, 'html.parser')
     try:
-        movie_version=validate_link(html.select_one('div.mov-label:contains("Version:") + div.mov-desc').get_text())
+        movie_version=validate_link(html.select_one('div.mov-label:-soup-contains("Version:") + div.mov-desc').get_text())
     except:
         movie_version=None
     try:
-        movie_quality=html.select_one('div.mov-label:contains("Qualité:") + div.mov-desc').get_text()
+        movie_quality=html.select_one('div.mov-label:-soup-contains("Qualité:") + div.mov-desc').get_text()
     except:
         movie_quality=None
     movie.quality=movie_quality
@@ -94,7 +94,7 @@ def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False):
                 Link.objects.get(embed_link=link,episode=episode)
             except:
                 Link.objects.create(embed_link=link,version='VOSTFR',episode=episode)
-    other_seasons_items=html.select('div.mov-label:contains("Synopsis:") + div.mov-desc a')
+    other_seasons_items=html.select('div.mov-label:-soup-contains("Synopsis:") + div.mov-desc a')
     other_seasons=[]
     for a in other_seasons_items:
         other_seasons.append(
