@@ -19,7 +19,10 @@ def get_year(driver,link):
     wait = WebDriverWait(driver, duration)
     wait_until_title_contains(driver, wait)
     html = BeautifulSoup(driver.page_source, 'html.parser')
-    return html.select_one('.mov-list  li:nth-child(2) .mov-desc').get_text().strip()
+    year_element=html.select_one('div.mov-label:contains("Date de sortie:") + div.mov-desc')
+    if year_element:
+        return year_element.get_text().strip()
+    return None
 def set_link_version(version):
     if version.lower() in vostfr_versions:return 'VOSTFR'
     elif version.lower() in vf_versions:return 'VF'
@@ -36,8 +39,14 @@ def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
         wait_until_title_contains(driver, wait)
         print('[+] driver loaded successfully')
     html = BeautifulSoup(driver.page_source, 'html.parser')
-    movie_version=validate_link(html.select_one('.mov-list  li:nth-child(7) .mov-desc').get_text())
-    movie_quality=html.select_one('.mov-list  li:nth-child(8) .mov-desc').get_text()
+    try:
+        movie_version=validate_link(html.select_one('div.mov-label:contains("Version:") + div.mov-desc').get_text())
+    except:
+        movie_version=None
+    try:
+        movie_quality=html.select_one('div.mov-label:contains("Qualité:") + div.mov-desc').get_text()
+    except:
+        movie_quality=None
     movie.quality=movie_quality
     movie.save()
     movie_links_hrefs=['https://'+l['href'].split('https://')[-1] for l in html.select('.linkstab > a')]
@@ -85,7 +94,7 @@ def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False):
                 Link.objects.get(embed_link=link,episode=episode)
             except:
                 Link.objects.create(embed_link=link,version='VOSTFR',episode=episode)
-    other_seasons_items=html.select('.mov-list  li:nth-child(9) .mov-desc a')
+    other_seasons_items=html.select('div.mov-label:contains("Synopsis:") + div.mov-desc a')
     other_seasons=[]
     for a in other_seasons_items:
         other_seasons.append(
@@ -106,7 +115,9 @@ def load_movies_page(driver : webdriver.Chrome,page_link : str):
     movies_names=[item.get_text().strip() for item in movies_items]
     for i, title in enumerate(movies_names):
         year=get_year(driver,movies_links[i])
-        mm=Movie.search_by_title(title,year)
+        mm=None
+        if year:
+            mm=Movie.search_by_title(title,year)
         searched_movie=mm[0] if mm else None
         if not searched_movie:
             tmdb_movie=search_select_movie(title,year)

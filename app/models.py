@@ -390,13 +390,13 @@ class Genre(models.Model):
         super().save(*args, **kwargs)
 class OtherTitle(models.Model):
     title = models.CharField(max_length=255,blank=True,null=True)
-    movie = models.ForeignKey(Movie, related_name='other_titles', on_delete=models.CASCADE, null=True, blank=True)
+    movie = models.ForeignKey('Movie', related_name='other_titles', on_delete=models.CASCADE, null=True, blank=True)
     serie = models.ForeignKey(Serie, related_name='other_titles', on_delete=models.CASCADE, null=True, blank=True)
     def __str__(self):
         return self.title
 class Keyword(models.Model):
     name = models.CharField(max_length=255,blank=True,null=True)
-    movie = models.ForeignKey(Movie, related_name='keywords', on_delete=models.CASCADE, null=True, blank=True)
+    movie = models.ForeignKey('Movie', related_name='keywords', on_delete=models.CASCADE, null=True, blank=True)
     serie = models.ForeignKey(Serie, related_name='keywords', on_delete=models.CASCADE, null=True, blank=True)
     def __str__(self):
         return self.name
