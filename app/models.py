@@ -59,6 +59,8 @@ class Video(models.Model):
 class Person(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255,blank=True,null=True)
+    gender = models.IntegerField(default=1,null=True)
+    popularity = models.FloatField(default=1,null=True)
     profile_path = models.CharField(max_length=255,blank=True,null=True)
     def __str__(self):
         return self.name
@@ -76,9 +78,13 @@ class Cast(models.Model):
             except:
                 try:
                     person=Person.objects.get(id=c.id)
+                    person.name=c.name # to remove
+                    person.gender=c.gender # to remove
+                    person.popularity=c.popularity # to remove
+                    person.profile_path=c.profile_path # to remove
                 except:
-                    person=Person.objects.create(id=c.id,name=c.name,profile_path=c.profile_path)
-                    person.save()
+                    person=Person.objects.create(id=c.id,name=c.name,gender=c.gender,popularity=c.popularity,profile_path=c.profile_path)
+                person.save() #-> step forward
                 cast=cls.objects.create(person=person, character=c.character)
             cast.save()
             if movie and movie not in cast.movies.all():
@@ -101,9 +107,13 @@ class Director(models.Model):
                 except:
                     try:
                         person=Person.objects.get(id=d.id)
+                        person.name=d.name # to remove
+                        person.gender=d.gender # to remove
+                        person.popularity=d.popularity # to remove
+                        person.profile_path=d.profile_path # to remove
                     except:
-                        person=Person.objects.create(id=d.id,name=d.name,profile_path=d.profile_path)
-                        person.save()
+                        person=Person.objects.create(id=d.id,name=d.name,gender=d.gender,popularity=d.popularity,profile_path=d.profile_path)
+                    person.save()  #-> step forward
                     director=cls.objects.create(person=person)
                 director.save()
                 if movie not in director.movies.all():
@@ -114,9 +124,13 @@ class Director(models.Model):
                 except:
                     try:
                         person=Person.objects.get(id=d.id)
+                        person.name=d.name # to remove
+                        person.gender=d.gender # to remove
+                        person.popularity=d.popularity # to remove
+                        person.profile_path=d.profile_path # to remove
                     except:
-                        person=Person.objects.create(id=d.id,name=d.name,profile_path=d.profile_path)
-                        person.save()
+                        person=Person.objects.create(id=d.id,name=d.name,gender=d.gender,popularity=d.popularity,profile_path=d.profile_path)
+                    person.save()  #-> step forward
                     director=cls.objects.create(person=person)
                 director.save()
                 if serie not in director.series.all():

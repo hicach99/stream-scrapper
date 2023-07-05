@@ -98,5 +98,18 @@
                 });
             </script>
         {% endif %}
+        {% if opts.verbose_name == 'movie' or opts.verbose_name == 'serie' %}
+            <div id="toolbar">
+                <div>
+                    <input type="button" id="update" href="{% url 'update_data' opts.verbose_name %}" class="default" value="Update all {{opts.verbose_name_plural}} info" >
+                </div>
+                <script>
+                    var update= document.getElementById("update");
+                    update.addEventListener("click", function(event){
+                        window.location = this.getAttribute("href");
+                    });
+                </script>
+            </div>
+        {% endif %}
     {% endif %}
 {% endblock %}

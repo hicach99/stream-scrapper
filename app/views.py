@@ -32,6 +32,10 @@ scrapper={
         },
     }
 }
+models={
+    'movie':Movie,
+    'serie':Serie,
+}
 
 def detect_website(link:str):
     parts=link.split('//')[1].split('/')[0].split('.')
@@ -39,7 +43,7 @@ def detect_website(link:str):
 
 def test(request):
     #return redirect('/admin')
-    a=Serie.get_tmdb(46952)
+    a=Movie.get_tmdb(603692)
     return HttpResponse([a], content_type='application/json')
 
 def load_movie(request,id):
@@ -103,3 +107,17 @@ def load_pages(request,model):
         messages.error(request, f'{model}s pages was not loaded due to: {e} in {get_exception_details(e)}')
     if driver:driver.quit()
     return redirect(f'admin:app_{model}_changelist')
+
+def update_data(request,model_name):
+    try:
+        model=models[model_name]
+        for item in model.objects.all():
+            try:
+                item.generated=False
+                item.save()
+            except Exception as e:
+                print('[-]',model_name, item.title,'is ignored')
+        messages.success(request, f'{model_name}s where updated successfully!')
+    except Exception as e:
+        messages.error(request, f'{model_name}s where not updated successfully! due to: {e}')
+    return redirect(f'admin:app_{model_name}_changelist')
