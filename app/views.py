@@ -7,7 +7,7 @@ from app.models import Movie, Season, Serie
 from app.sites.tools import get_exception_details
 
 scrapper={
-    'wiflix.surf':{
+    'wiflix':{
         'load_movie': wiflix_surf.load_movie_links,
         'load_season': wiflix_surf.load_season_links,
         'load_page': {
@@ -19,7 +19,7 @@ scrapper={
             'season':wiflix_surf.load_series_pages,
         },
     },
-    'french-stream.gg':{
+    'french-stream':{
         'load_movie': french_stream_bio.load_movie_links,
         'load_season': french_stream_bio.load_season_links,
         'load_page': {
@@ -39,10 +39,10 @@ models={
 
 def detect_website(link:str):
     parts=link.split('//')[1].split('/')[0].split('.')
-    return parts[-2]+'.'+parts[-1]
+    return parts[-2]
 
 def test(request):
-    #return redirect('/admin')
+    return redirect('/admin')
     a=Movie.get_tmdb(603692)
     return HttpResponse([a], content_type='application/json')
 
