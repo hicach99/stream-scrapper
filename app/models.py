@@ -82,9 +82,10 @@ class Cast(models.Model):
                     person.gender=c.gender # to remove
                     person.popularity=c.popularity # to remove
                     person.profile_path=c.profile_path # to remove
+                    person.save() #-> step forward
                 except:
                     person=Person.objects.create(id=c.id,name=c.name,gender=c.gender,popularity=c.popularity,profile_path=c.profile_path)
-                person.save() #-> step forward
+                    person.save() #-> step forward
                 cast=cls.objects.create(person=person, character=c.character)
             cast.save()
             if movie and movie not in cast.movies.all():
@@ -111,9 +112,10 @@ class Director(models.Model):
                         person.gender=d.gender # to remove
                         person.popularity=d.popularity # to remove
                         person.profile_path=d.profile_path # to remove
+                        person.save() #-> step forward
                     except:
                         person=Person.objects.create(id=d.id,name=d.name,gender=d.gender,popularity=d.popularity,profile_path=d.profile_path)
-                    person.save()  #-> step forward
+                        person.save()  #-> step forward
                     director=cls.objects.create(person=person)
                 director.save()
                 if movie not in director.movies.all():
@@ -128,9 +130,10 @@ class Director(models.Model):
                         person.gender=d.gender # to remove
                         person.popularity=d.popularity # to remove
                         person.profile_path=d.profile_path # to remove
+                        person.save() #-> step forward
                     except:
                         person=Person.objects.create(id=d.id,name=d.name,gender=d.gender,popularity=d.popularity,profile_path=d.profile_path)
-                    person.save()  #-> step forward
+                        person.save()  #-> step forward
                     director=cls.objects.create(person=person)
                 director.save()
                 if serie not in director.series.all():
