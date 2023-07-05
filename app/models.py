@@ -110,11 +110,10 @@ class Director(models.Model):
                         person=Person.objects.get(id=d.id)
                         person.name=d.name # to remove
                         person.gender=d.gender # to remove
-                        person.popularity=d.popularity # to remove
                         person.profile_path=d.profile_path # to remove
                         person.save() #-> step forward
                     except:
-                        person=Person.objects.create(id=d.id,name=d.name,gender=d.gender,popularity=d.popularity,profile_path=d.profile_path)
+                        person=Person.objects.create(id=d.id,name=d.name,gender=d.gender,profile_path=d.profile_path)
                         person.save()  #-> step forward
                     director=cls.objects.create(person=person)
                 director.save()
@@ -128,11 +127,10 @@ class Director(models.Model):
                         person=Person.objects.get(id=d.id)
                         person.name=d.name # to remove
                         person.gender=d.gender # to remove
-                        person.popularity=d.popularity # to remove
                         person.profile_path=d.profile_path # to remove
                         person.save() #-> step forward
                     except:
-                        person=Person.objects.create(id=d.id,name=d.name,gender=d.gender,popularity=d.popularity,profile_path=d.profile_path)
+                        person=Person.objects.create(id=d.id,name=d.name,gender=d.gender,profile_path=d.profile_path)
                         person.save()  #-> step forward
                     director=cls.objects.create(person=person)
                 director.save()
