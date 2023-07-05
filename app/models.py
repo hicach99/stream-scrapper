@@ -78,14 +78,9 @@ class Cast(models.Model):
             except:
                 try:
                     person=Person.objects.get(id=c.id)
-                    person.name=c.name # to remove
-                    person.gender=c.gender # to remove
-                    person.popularity=c.popularity # to remove
-                    person.profile_path=c.profile_path # to remove
-                    person.save() #-> step forward
                 except:
                     person=Person.objects.create(id=c.id,name=c.name,gender=c.gender,popularity=c.popularity,profile_path=c.profile_path)
-                    person.save() #-> step forward
+                    person.save()
                 cast=cls.objects.create(person=person, character=c.character)
             cast.save()
             if movie and movie not in cast.movies.all():
@@ -108,13 +103,9 @@ class Director(models.Model):
                 except:
                     try:
                         person=Person.objects.get(id=d.id)
-                        person.name=d.name # to remove
-                        person.gender=d.gender # to remove
-                        person.profile_path=d.profile_path # to remove
-                        person.save() #-> step forward
                     except:
                         person=Person.objects.create(id=d.id,name=d.name,gender=d.gender,profile_path=d.profile_path)
-                        person.save()  #-> step forward
+                        person.save()
                     director=cls.objects.create(person=person)
                 director.save()
                 if movie not in director.movies.all():
@@ -125,13 +116,9 @@ class Director(models.Model):
                 except:
                     try:
                         person=Person.objects.get(id=d.id)
-                        person.name=d.name # to remove
-                        person.gender=d.gender # to remove
-                        person.profile_path=d.profile_path # to remove
-                        person.save() #-> step forward
                     except:
                         person=Person.objects.create(id=d.id,name=d.name,gender=d.gender,profile_path=d.profile_path)
-                        person.save()  #-> step forward
+                        person.save()
                     director=cls.objects.create(person=person)
                 director.save()
                 if serie not in director.series.all():
@@ -141,6 +128,7 @@ class Director(models.Model):
 
 class Movie(models.Model):
     id = models.IntegerField(primary_key=True)
+    dmca = models.CharField(max_length=6,null=True,default='000000')
     source_link = models.CharField(max_length=512,blank=True,null=True)
     generated = models.BooleanField(default=False)
     adult = models.BooleanField(default=False)
@@ -158,8 +146,8 @@ class Movie(models.Model):
     vote_average = models.FloatField(blank=True,null=True)
     budget = models.FloatField(default=0,blank=True,null=True)
     revenue = models.FloatField(default=0,blank=True,null=True)
-    created_on = models.DateField(auto_now_add=True,null=True)
     quality = models.CharField(max_length=255,blank=True,null=True)
+    created_on = models.DateTimeField(auto_now_add=True,null=True)
     def set_movie_details(self,movie):
         try:
             self.adult = movie.adult
@@ -168,7 +156,7 @@ class Movie(models.Model):
             self.original_title = movie.original_title
             self.overview = movie.overview
             self.countries = ', '.join([i['iso_3166_1'] for i in movie.production_countries])
-            self.release_date = movie.release_date
+            if len(movie.release_date)>3: self.release_date = movie.release_date
             self.poster_path = movie.poster_path
             self.backdrop_path = movie.backdrop_path
             self.original_language = movie.original_language
@@ -228,6 +216,7 @@ class Movie(models.Model):
         return queryset
 class Serie(models.Model):
     id = models.IntegerField(primary_key=True)
+    dmca = models.CharField(max_length=6,null=True,default='000000')
     source_link = models.CharField(max_length=512,blank=True,null=True)
     generated = models.BooleanField(default=False)
     adult = models.BooleanField(default=False)
@@ -246,7 +235,7 @@ class Serie(models.Model):
     vote_average = models.FloatField(blank=True,null=True)
     number_of_seasons = models.IntegerField(default=0,blank=True,null=True)
     number_of_episodes = models.IntegerField(default=0,blank=True,null=True)
-    created_on = models.DateField(auto_now_add=True,null=True)
+    created_on = models.DateTimeField(auto_now_add=True,null=True)
     def set_serie_details(self,serie):
         try:
             self.adult = serie.adult
@@ -256,7 +245,7 @@ class Serie(models.Model):
             self.original_title = serie.original_name
             self.overview = serie.overview
             self.countries = ', '.join(serie.origin_country)
-            self.release_date = serie.first_air_date
+            if len(serie.first_air_date)>3: self.release_date = serie.first_air_date
             self.poster_path = serie.poster_path
             self.backdrop_path = serie.backdrop_path
             self.original_language = serie.original_language
@@ -324,8 +313,8 @@ class Season(models.Model):
     poster_path = models.CharField(max_length=255,blank=True,null=True)
     season_number = models.IntegerField(default=0,blank=True,null=True)
     episode_count = models.IntegerField(default=0,blank=True,null=True)
-    created_on = models.DateField(auto_now_add=True,null=True)
     serie = models.ForeignKey('Serie', related_name='seasons', blank=True, on_delete=models.CASCADE,null=True)
+    created_on = models.DateTimeField(auto_now_add=True,null=True)
     def __str__(self):
         return self.serie.title+' '+self.name
     def version(self):
@@ -351,7 +340,7 @@ class Season(models.Model):
 class Episode(models.Model):
     episode_number = models.IntegerField(default=0,blank=True,null=True)
     season = models.ForeignKey('Season', related_name='episodes', blank=True, on_delete=models.CASCADE,null=True)
-    created_on = models.DateField(auto_now_add=True,null=True)
+    created_on = models.DateTimeField(auto_now_add=True,null=True)
     def version(self):
         vf=False
         vostfr=False
@@ -374,7 +363,7 @@ class Link(models.Model):
     version = models.CharField(max_length=255,blank=True,choices=versions_choices,null=True)
     movie = models.ForeignKey('Movie', related_name='links', blank=True, on_delete=models.CASCADE,null=True)
     episode = models.ForeignKey('Episode', related_name='links', blank=True, on_delete=models.CASCADE,null=True)
-    created_on = models.DateField(auto_now_add=True,null=True)
+    created_on = models.DateTimeField(auto_now_add=True,null=True)
     def __str__(self):
         if self.movie:
             return 'lien '+str(self.id)+': '+str(self.movie)
