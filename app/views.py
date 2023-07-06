@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from app.sites import french_stream_bio, wiflix_surf
 from app.sites.scrapper import init_driver
-from app.models import Movie, Season, Serie
+from app.models import Movie, PopularMovie, PopularSerie, Season, Serie, TopRatedMovie, TopRatedSerie, UpcomingMovie, UpcomingSerie
 from app.sites.tools import get_exception_details
 
 scrapper={
@@ -35,6 +35,14 @@ scrapper={
 models={
     'movie':Movie,
     'serie':Serie,
+}
+banners_models={
+    'popularmovie':Movie,
+    'popularserie':Movie,
+    'topratedmovie':Movie,
+    'topratedserie':Movie,
+    'upcomingmovie':Movie,
+    'upcomingserie':Movie,
 }
 
 def detect_website(link:str):
@@ -120,4 +128,28 @@ def update_data(request,model_name):
         messages.success(request, f'{model_name}s where updated successfully!')
     except Exception as e:
         messages.error(request, f'{model_name}s where not updated successfully! due to: {e}')
+    return redirect(f'admin:app_{model_name}_changelist')
+
+def generate_data(request,model_name):
+    try:
+        model=banners_models[model_name]
+        obj=('movie' if 'movie' in model_name else 'serie')
+        if 'popular' in model_name:
+            if 'movie' in model_name:
+                PopularMovie.generate_data()
+            else:
+                PopularSerie.generate_data()
+        elif 'upcoming' in model_name: 
+            if 'movie' in model_name:
+                UpcomingMovie.generate_data()
+            else:
+                UpcomingSerie.generate_data()
+        else:
+            if 'movie' in model_name:
+                TopRatedMovie.generate_data()
+            else:
+                TopRatedSerie.generate_data()
+        messages.success(request, f'{obj}s where generated successfully!')
+    except Exception as e:
+        messages.error(request, f'{obj}s where not generated successfully! due to: {e}')
     return redirect(f'admin:app_{model_name}_changelist')

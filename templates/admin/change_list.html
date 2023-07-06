@@ -1,4 +1,5 @@
 {% extends 'admin/change_list.html' %}
+{% load functions %}
 
 {% block object-tools %}
     {{ block.super }}
@@ -111,5 +112,19 @@
                 </script>
             </div>
         {% endif %}
+        {% if opts.verbose_name == 'popular movie' or opts.verbose_name == 'popular serie' or opts.verbose_name == 'upcoming movie' or opts.verbose_name == 'upcoming serie' or opts.verbose_name == 'top rated movie' or opts.verbose_name == 'top rated serie' %}
+        <div id="toolbar">
+            <div>
+                <input type="button" id="update" href="{% url 'generate_data' opts.verbose_name|replace %}" class="default" value="Generate {{opts.verbose_name_plural}}" >
+            </div>
+            <script>
+                var update= document.getElementById("update");
+                update.addEventListener("click", function(event){
+                    window.location = this.getAttribute("href");
+                });
+            </script>
+        </div>
+        {% endif %}
     {% endif %}
 {% endblock %}
+ 

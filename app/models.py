@@ -418,3 +418,99 @@ class Keyword(models.Model):
                     cls.objects.get(name=keyword_name,serie=serie)
                 except:
                     cls.objects.create(name=keyword_name,serie=serie)
+class PopularMovie(models.Model):
+    enabled = models.BooleanField(default=True)
+    source = models.ForeignKey('Movie', related_name='popular_movies', on_delete=models.CASCADE, null=True, blank=True)
+    def __str__(self):
+        return str(self.source)
+    @classmethod
+    def generate_data(cls):
+        tmdb.api_key = random.choice(api_keys)
+        items_ids = [item.id for item in movie_getter.popular()]
+        cls.objects.all().delete()
+        for id in items_ids:
+            try:
+                item=Movie.objects.get(id=id)
+                cls.objects.create(source=item)
+            except:
+                pass
+class UpcomingMovie(models.Model):
+    enabled = models.BooleanField(default=True)
+    source = models.ForeignKey('Movie', related_name='upconing_movies', on_delete=models.CASCADE, null=True, blank=True)
+    def __str__(self):
+        return str(self.source)
+    @classmethod
+    def generate_data(cls):
+        tmdb.api_key = random.choice(api_keys)
+        items_ids = [item.id for item in movie_getter.upcoming()]
+        cls.objects.all().delete()
+        for id in items_ids:
+            try:
+                item=Movie.objects.get(id=id)
+                cls.objects.create(source=item)
+            except:
+                pass
+class TopRatedMovie(models.Model):
+    enabled = models.BooleanField(default=True)
+    source = models.ForeignKey('Movie', related_name='top_rated_movies', on_delete=models.CASCADE, null=True, blank=True)
+    def __str__(self):
+        return str(self.source)
+    @classmethod
+    def generate_data(cls):
+        tmdb.api_key = random.choice(api_keys)
+        items_ids = [item.id for item in movie_getter.top_rated()]
+        cls.objects.all().delete()
+        for id in items_ids:
+            try:
+                item=Movie.objects.get(id=id)
+                cls.objects.create(source=item)
+            except:
+                pass
+class PopularSerie(models.Model):
+    enabled = models.BooleanField(default=True)
+    source = models.ForeignKey('Serie', related_name='popular_series', on_delete=models.CASCADE, null=True, blank=True)
+    def __str__(self):
+        return str(self.source)
+    @classmethod
+    def generate_data(cls):
+        tmdb.api_key = random.choice(api_keys)
+        items_ids = [item.id for item in serie_getter.popular()]
+        cls.objects.all().delete()
+        for id in items_ids:
+            try:
+                item=Serie.objects.get(id=id)
+                cls.objects.create(source=item)
+            except:
+                pass
+class UpcomingSerie(models.Model):
+    enabled = models.BooleanField(default=True)
+    source = models.ForeignKey('Serie', related_name='upconing_series', on_delete=models.CASCADE, null=True, blank=True)
+    def __str__(self):
+        return str(self.source)
+    @classmethod
+    def generate_data(cls):
+        tmdb.api_key = random.choice(api_keys)
+        items_ids = [item.id for item in serie_getter.on_the_air()]
+        cls.objects.all().delete()
+        for id in items_ids:
+            try:
+                item=Serie.objects.get(id=id)
+                cls.objects.create(source=item)
+            except:
+                pass
+class TopRatedSerie(models.Model):
+    enabled = models.BooleanField(default=True)
+    source = models.ForeignKey('Serie', related_name='top_rated_series', on_delete=models.CASCADE, null=True, blank=True)
+    def __str__(self):
+        return str(self.source)
+    @classmethod
+    def generate_data(cls):
+        tmdb.api_key = random.choice(api_keys)
+        items_ids = [item.id for item in serie_getter.top_rated()]
+        cls.objects.all().delete()
+        for id in items_ids:
+            try:
+                item=Serie.objects.get(id=id)
+                cls.objects.create(source=item)
+            except:
+                pass

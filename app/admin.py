@@ -135,10 +135,30 @@ class SeasonAdmin(admin.ModelAdmin):
 class EpisodeAdmin(admin.ModelAdmin):
     inlines = [linkInline,]
 
+# Banners Admin
+class BannerAdmin(admin.ModelAdmin):
+    list_display = ('title','release_date','created_on','enabled','display_poster_path',)  # Add any other fields you want to display
+    def display_poster_path(self, obj):
+        if obj.source.poster_path:
+            return format_html('<a href="/admin/app/serie/{}/change/"><img src="{}" height="150" style="border-radius: 10px;" /></a>',obj.source.id ,TmdbApi.original_images_url+obj.source.poster_path)
+        else:
+            return '(No image)'
+    display_poster_path.short_description = 'Poster'
+    def title(self, obj): return obj.source.title
+    def release_date(self, obj): return obj.source.release_date
+    def created_on(self, obj): return obj.source.created_on
 # Display
 admin.site.register(Serie, SerieAdmin)
 admin.site.register(Movie, MovieAdmin)
 admin.site.register(Season, SeasonAdmin)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Episode, EpisodeAdmin)
+
+admin.site.register(PopularMovie, BannerAdmin)
+admin.site.register(UpcomingMovie, BannerAdmin)
+admin.site.register(TopRatedMovie, BannerAdmin)
+admin.site.register(PopularSerie, BannerAdmin)
+admin.site.register(UpcomingSerie, BannerAdmin)
+admin.site.register(TopRatedSerie, BannerAdmin)
+
 admin.site.register(TmdbApi)

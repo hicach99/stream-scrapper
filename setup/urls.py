@@ -6,6 +6,7 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/app/update/<str:model_name>/', update_data,name='update_data'),
+    path('admin/app/generate/<str:model_name>/', generate_data ,name='generate_data'),
     path('admin/app/page/<str:model>/', load_page,name='load_page'),
     path('admin/app/pages/<str:model>/', load_pages,name='load_pages'),
     path('admin/app/movie/<int:id>/load/', load_movie,name='load_movie'),
