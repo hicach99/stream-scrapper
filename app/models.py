@@ -499,18 +499,64 @@ class UpcomingSerie(models.Model):
             except:
                 pass
 class TopRatedSerie(models.Model):
-    enabled = models.BooleanField(default=True)
-    source = models.ForeignKey('Serie', related_name='top_rated_series', on_delete=models.CASCADE, null=True, blank=True)
-    def __str__(self):
-        return str(self.source)
-    @classmethod
-    def generate_data(cls):
-        tmdb.api_key = random.choice(api_keys)
-        items_ids = [item.id for item in serie_getter.top_rated()]
-        cls.objects.all().delete()
-        for id in items_ids:
-            try:
-                item=Serie.objects.get(id=id)
-                cls.objects.create(source=item)
-            except:
-                pass
+        enabled = models.BooleanField(default=True)
+        source = models.ForeignKey('Serie', related_name='top_rated_series', on_delete=models.CASCADE, null=True, blank=True)
+        def __str__(self):
+            return str(self.source)
+        @classmethod
+        def generate_data(cls):
+            tmdb.api_key = random.choice(api_keys)
+            items_ids = [item.id for item in serie_getter.top_rated()]
+            cls.objects.all().delete()
+            for id in items_ids:
+                try:
+                    item=Serie.objects.get(id=id)
+                    cls.objects.create(source=item)
+                except:
+                    pass
+class Platform(models.Model):
+    name = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        default='papystreaming'
+    )
+    domain_name = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        default='papystreaming.vip'
+    )
+    url = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,default='https://wvw.papystreaming.vip/'
+    )
+    title = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        default="papystreaming film streaming et série streaming gratuit"
+    )
+    keywords=models.TextField(
+        blank=True,
+        null=True,
+        default="film streaming, streaming, film, série streaming, papystreaming, du streaming, streamcomplet, stream complet"
+    )
+    meta_description=models.TextField(
+        blank=True,
+        null=True,
+        default='papystreaming site du films et séries français, Film streaming et série streaming gratuit en vf 2021, Série streaming complet HD fr.'
+    )
+    description=models.TextField(blank=True,null=True)
+    footer_description=models.TextField(
+        blank=True,
+        null=True,
+        default='''Qu\'est-ce que propose le site série streaming (papystreaming)?<br>le site Web papystreaming Soumettre les Tops Films et Séries, Nouvelles séries, Séries renouvelées,<br>tout ça gratuitement papystreaming est le meilleur site du film et série streaming français.'''
+    )
+    theme_color=models.CharField(max_length=255,blank=True,null=True,default='#4b57fc') # hex or rgb()
+    background_color=models.CharField(max_length=255,blank=True,null=True,default='#111113') # hex or rgb()
+    dmca=models.TextField(blank=True,null=True,default='')
+    def save(self, *args, **kwargs):
+        if self.name: self.name=self.name.lower()
+        super().save(*args, **kwargs)
