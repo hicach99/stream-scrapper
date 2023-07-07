@@ -556,10 +556,17 @@ class Platform(models.Model):
     footer_description=models.TextField(
         blank=True,
         null=True,
-        default='''Qu\'est-ce que propose le site série streaming (papystreaming)?<br>le site Web papystreaming Soumettre les Tops Films et Séries, Nouvelles séries, Séries renouvelées,<br>tout ça gratuitement papystreaming est le meilleur site du film et série streaming français.'''
+        default='''Le Seul Site De Film Streaming En Hd 720p, Full Hd 1020p, Uh 4k Regardez Sans Limite Tous Les Films Et Séries Que Vous Desirez En Streaming Hd Sur (Papystreaming). Le Site N°1 Pour Voir Les Derniers Films Et Series En Streaming Vf Gratuitement, Sans Inscription Et Sans Pub. Visitez Notre Site De Streaming Maintenant Pour Retrouver Notre Collection Des Films Et Séries. Voir Votre Film En Français Préféré En Stream Complet. Du Grand Cinéma Classique Au Film D'auteur Contemporain, Regarder Les Meilleurs Films En Version Française.'''
+    )
+    tag=models.TextField(
+        blank=True,
+        null=True,
+        default='''PapyStreaming Voir Film Site de streaming PapyStreaming VF Film streaming Regarder StreamingVF.'''
     )
     theme_color=models.CharField(max_length=255,blank=True,null=True,default='#4b57fc') # hex or rgb()
     background_color=models.CharField(max_length=255,blank=True,null=True,default='#111113') # hex or rgb()
+    background_path=models.CharField(max_length=255,blank=True,null=True,default='/static/img/background.jpg') # hex or rgb()
+    logo_path=models.CharField(max_length=255,blank=True,null=True,default='/static/img/logo.png') # hex or rgb()
     dmca=models.TextField(blank=True,null=True,default='')
     def save(self, *args, **kwargs):
         if self.name: self.name=self.name.lower()
