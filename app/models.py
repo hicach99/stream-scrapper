@@ -548,7 +548,11 @@ class Platform(models.Model):
         null=True,
         default='papystreaming site du films et séries français, Film streaming et série streaming gratuit en vf 2021, Série streaming complet HD fr.'
     )
-    description=models.TextField(blank=True,null=True)
+    description=models.TextField(
+        blank=True,
+        null=True,
+        default='papystreaming Venez découvrir un site de streaming Papystreaming qui vous propose tout les derniers films complet et serie streaming complet en exclue et en streaming longue durée sans limitation en vf et vostfr. Vous êtes à deux clics de ne plus pourvoir vous passer de notre site de films en streaming.'
+    )
     footer_description=models.TextField(
         blank=True,
         null=True,

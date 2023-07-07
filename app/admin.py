@@ -148,7 +148,7 @@ class BannerAdmin(admin.ModelAdmin):
     def release_date(self, obj): return obj.source.release_date
     def created_on(self, obj): return obj.source.created_on
 class PlatformAdmin(admin.ModelAdmin):
-    list_display = ('domain_name','url','display_theme_color','display_background_color')  # Add any other fields you want to display
+    list_display = ('name','domain_name','url','display_theme_color','display_background_color')  # Add any other fields you want to display
     def display_theme_color(self, obj):
             return format_html('<a href="{}"><div style="border-radius: 10px;width:50px;height:50px;background-color:{};border: 2px solid white"></div></a>',obj.url ,obj.theme_color)
     display_theme_color.short_description = 'Theme Color'
