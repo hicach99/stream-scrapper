@@ -158,6 +158,7 @@ class PlatformAdmin(admin.ModelAdmin):
 # Display
 admin.site.register(TmdbApi)
 admin.site.register(Platform, PlatformAdmin)
+admin.site.register(User)
 
 admin.site.register(Serie, SerieAdmin)
 admin.site.register(Movie, MovieAdmin)

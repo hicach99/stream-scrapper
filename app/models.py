@@ -25,6 +25,8 @@ def get_tv_show_keywords(tv_id):
 class TmdbApi(models.Model):
     key = models.CharField(max_length=255,unique=True,default='')
     original_images_url='https://image.tmdb.org/t/p/original'
+    def __str__(self):
+        return self.key
 tmdb = TMDb()
 tmdb.language = 'fr'
 movie_getter = Tmdb_Movie()
@@ -514,6 +516,25 @@ class TopRatedSerie(models.Model):
                     cls.objects.create(source=item)
                 except:
                     pass
+class User(models.Model):
+    TYPE_CHOICES = (
+        (0, 'Visitor'),
+        (1, 'Movies Admin'),
+        (2, 'Series Admin'),
+        (3, 'Admin'),
+        (4, 'Super Admin'),
+    )
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=255, unique=True)
+    type = models.IntegerField(choices=TYPE_CHOICES, default=0)
+    password = models.CharField(max_length=255)
+    xp = models.FloatField(default=0.0)
+    prize = models.FloatField(default=0.0)
+    created_on = models.DateTimeField(auto_now_add=True)
+    last_login = models.DateTimeField(null=True,auto_now_add=True,blank=True)
+    platform = models.ForeignKey('Platform', related_name='users', on_delete=models.CASCADE, null=True, blank=True)
+    def __str__(self):
+        return self.username+' '+self.platform.domain_name
 class Platform(models.Model):
     name = models.CharField(
         max_length=255,
@@ -567,7 +588,50 @@ class Platform(models.Model):
     background_color=models.CharField(max_length=255,blank=True,null=True,default='#111113') # hex or rgb()
     background_path=models.CharField(max_length=255,blank=True,null=True,default='/static/img/background.jpg') # hex or rgb()
     logo_path=models.CharField(max_length=255,blank=True,null=True,default='/static/img/logo.png') # hex or rgb()
-    dmca=models.TextField(blank=True,null=True,default='')
+    dmca=models.TextField(
+        blank=True,
+        null=True,
+        default='''
+            <br>
+            PapyStreaming .forum respecte la propriété intellectuelle d'autrui et prend les questions de propriété intellectuelle très au sérieux et s’engage à répondre aux besoins des propriétaires de contenu tout en les aidant à gérer la publication de leur contenu en ligne.
+            <br>
+            <br>
+            Si vous pensez que votre travail protégé par un droit d'auteur a été copié de manière à constituer une violation du droit d'auteur et qu'il est accessible sur ce site, vous pouvez en informer notre agent des droits d'auteur, comme indiqué dans la loi DMCA (Digital Millennium Copyright Act of 1998). Pour que votre réclamation soit valide en vertu de la DMCA, vous devez fournir les informations suivantes lors de l'envoi d'un avis d'infraction au droit d'auteur:
+            <br>
+            <br>
+            Signature physique ou électronique d'une personne autorisée à agir au nom du titulaire du droit d'auteur Identification de l'œuvre protégée qui aurait été violée
+            <br>
+            <br>
+            Identification du matériel présumé contrefaisant ou faisant l'objet de l'activité illicite et devant être enlevé
+            <br>
+            <br>
+            Informations raisonnablement suffisantes pour permettre au fournisseur de services de contacter la partie plaignante, telles qu'une adresse, un numéro de téléphone et, le cas échéant, une adresse de courrier électronique
+            <br>
+            <br>
+            Une déclaration indiquant que la partie plaignante "croit de bonne foi que l'utilisation du matériel de la manière incriminée n'est pas autorisée par le titulaire du droit d'auteur, son mandataire ou la loi"
+            <br>
+            <br>
+            Une déclaration selon laquelle "les informations figurant dans la notification sont exactes" et "sous peine de parjure, la partie plaignante est autorisée à agir au nom du titulaire d'un droit exclusif prétendument violé"
+            <br>
+            <br>
+            Les informations ci-dessus doivent être envoyées par notification écrite, télécopiée ou par courrier électronique à l'agent désigné suivant:
+            <br>
+            <br>
+            Attention: bureau DMCA
+            <br>
+            <br>
+            Contactez nous:
+            <br>
+            <br>
+            sapystreamingdmca@gmail.com
+            <br>
+            <br>
+            Ces informations ne doivent pas être interprétées comme des conseils juridiques. Pour plus d'informations sur les informations requises pour les notifications DMCA valides, voir 17 États-Unis d'Amérique. 512 (c) (3).
+        '''
+    )
     def save(self, *args, **kwargs):
         if self.name: self.name=self.name.lower()
+        if self.domain_name: self.name=self.domain_name.lower()
         super().save(*args, **kwargs)
+    def __str__(self):
+        return self.domain_name
