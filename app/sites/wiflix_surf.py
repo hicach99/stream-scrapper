@@ -116,8 +116,8 @@ def load_movies_page(driver : webdriver.Chrome,page_link : str):
     for i, title in enumerate(movies_names):
         year=get_year(driver,movies_links[i])
         mm=None
-        if year:
-            mm=Movie.search_by_title(title,year)
+        # if year:
+        #     mm=Movie.search_by_title(title,year)
         searched_movie=mm[0] if mm else None
         if not searched_movie:
             tmdb_movie=search_select_movie(title,year)
@@ -162,7 +162,7 @@ def load_series_page(driver : webdriver.Chrome,page_link : str):
             except:
                 series_seasons.append(None)
     for i, title in enumerate(series_names):
-        ss=Serie.search_by_title(title,series_seasons[i])
+        ss=None #Serie.search_by_title(title,series_seasons[i])
         searched_serie=ss[0] if ss else None
         if not searched_serie:
             tmdb_serie=search_select_serie(title,series_seasons[i])
