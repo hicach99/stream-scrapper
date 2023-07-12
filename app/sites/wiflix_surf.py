@@ -102,7 +102,7 @@ def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False):
                 'num':int(a.select_one('b').get_text().split(' - ')[-1].split(' ')[-1]),
                 'link':a['href'],
             }
-        )
+        ) 
     return other_seasons
 # load a movies page
 def load_movies_page(driver : webdriver.Chrome,page_link : str):
@@ -153,11 +153,14 @@ def load_series_page(driver : webdriver.Chrome,page_link : str):
     series_links=[item['href'] for item in series_items]
     series_names=[item.get_text().strip() for item in series_items]
     series_seasons=[]
-    for item in html.select(page_item_box_season):
+    for i, item in enumerate(html.select(page_item_box_season)):
         try:
             series_seasons.append(int(item.get_text().strip().split(' ')[1].split('\n\t')[0]))
         except:
-            series_seasons.append(None)
+            try:
+                series_seasons.append(int(series_links[i].split('-')[-1].split('.')[0]))
+            except:
+                series_seasons.append(None)
     for i, title in enumerate(series_names):
         ss=Serie.search_by_title(title,series_seasons[i])
         searched_serie=ss[0] if ss else None
