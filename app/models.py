@@ -415,6 +415,7 @@ class OtherTitle(models.Model):
 class Visit(models.Model):
     movie = models.ForeignKey('Movie', related_name='visits', on_delete=models.CASCADE, null=True, blank=True)
     serie = models.ForeignKey('Serie', related_name='visits', on_delete=models.CASCADE, null=True, blank=True)
+    season = models.ForeignKey('Season', related_name='visits', on_delete=models.CASCADE, null=True, blank=True)
     user = models.ForeignKey('User', related_name='visits', on_delete=models.CASCADE, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True,null=True)
 class Like(models.Model):
