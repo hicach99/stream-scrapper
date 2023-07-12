@@ -152,7 +152,12 @@ def load_series_page(driver : webdriver.Chrome,page_link : str):
     series_items=html.select(page_item_box)
     series_links=[item['href'] for item in series_items]
     series_names=[item.get_text().strip() for item in series_items]
-    series_seasons=[int(item.get_text().strip().split(' ')[1].split('\n\t')[0]) for item in html.select(page_item_box_season)]
+    series_seasons=[]
+    for item in html.select(page_item_box_season):
+        try:
+            series_seasons.append(int(item.get_text().strip().split(' ')[1].split('\n\t')[0]))
+        except:
+            series_seasons.append(None)
     for i, title in enumerate(series_names):
         ss=Serie.search_by_title(title,series_seasons[i])
         searched_serie=ss[0] if ss else None

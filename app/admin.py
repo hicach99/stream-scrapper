@@ -147,6 +147,7 @@ class BannerAdmin(admin.ModelAdmin):
     def title(self, obj): return obj.source.title
     def release_date(self, obj): return obj.source.release_date
     def created_on(self, obj): return obj.source.created_on
+# platform Admin
 class PlatformAdmin(admin.ModelAdmin):
     list_display = ('name','domain_name','url','display_theme_color','display_background_color')  # Add any other fields you want to display
     def display_theme_color(self, obj):
@@ -155,10 +156,14 @@ class PlatformAdmin(admin.ModelAdmin):
     def display_background_color(self, obj):
             return format_html('<a href="{}"><div style="border-radius: 10px;width:50px;height:50px;background-color:{};border: 2px solid white"></div></a>',obj.url ,obj.background_color)
     display_background_color.short_description = 'Background Color'
+# User Admin
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('username','email','type','platform')  # Add any other fields you want to display
+
 # Display
 admin.site.register(TmdbApi)
 admin.site.register(Platform, PlatformAdmin)
-admin.site.register(User)
+admin.site.register(User,UserAdmin)
 
 admin.site.register(Serie, SerieAdmin)
 admin.site.register(Movie, MovieAdmin)

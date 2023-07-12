@@ -81,7 +81,11 @@ class Cast(models.Model):
                 try:
                     person=Person.objects.get(id=c.id)
                 except:
-                    person=Person.objects.create(id=c.id,name=c.name,gender=c.gender,popularity=c.popularity,profile_path=c.profile_path)
+                    person=Person.objects.create(id=c.id,name=c.name,popularity=c.popularity,profile_path=c.profile_path)
+                    try:
+                        person.gender=c.gender
+                    except:
+                        pass
                     person.save()
                 cast=cls.objects.create(person=person, character=c.character)
             cast.save()
@@ -106,7 +110,11 @@ class Director(models.Model):
                     try:
                         person=Person.objects.get(id=d.id)
                     except:
-                        person=Person.objects.create(id=d.id,name=d.name,gender=d.gender,profile_path=d.profile_path)
+                        person=Person.objects.create(id=d.id,name=d.name,profile_path=d.profile_path)
+                        try:
+                            person.gender=d.gender
+                        except:
+                            pass
                         person.save()
                     director=cls.objects.create(person=person)
                 director.save()
@@ -119,7 +127,11 @@ class Director(models.Model):
                     try:
                         person=Person.objects.get(id=d.id)
                     except:
-                        person=Person.objects.create(id=d.id,name=d.name,gender=d.gender,profile_path=d.profile_path)
+                        person=Person.objects.create(id=d.id,name=d.name,profile_path=d.profile_path)
+                        try:
+                            person.gender=d.gender
+                        except:
+                            pass
                         person.save()
                     director=cls.objects.create(person=person)
                 director.save()
@@ -400,6 +412,26 @@ class OtherTitle(models.Model):
     serie = models.ForeignKey(Serie, related_name='other_titles', on_delete=models.CASCADE, null=True, blank=True)
     def __str__(self):
         return self.title
+class Visit(models.Model):
+    movie = models.ForeignKey('Movie', related_name='visits', on_delete=models.CASCADE, null=True, blank=True)
+    serie = models.ForeignKey('Serie', related_name='visits', on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey('User', related_name='visits', on_delete=models.CASCADE, null=True, blank=True)
+    created_on = models.DateTimeField(auto_now_add=True,null=True)
+class Like(models.Model):
+    positive = models.BooleanField(default=True)
+    movie = models.ForeignKey('Movie', related_name='likes', on_delete=models.CASCADE, null=True, blank=True)
+    serie = models.ForeignKey('Serie', related_name='likes', on_delete=models.CASCADE, null=True, blank=True)
+    season = models.ForeignKey('Season', related_name='likes', on_delete=models.CASCADE, null=True, blank=True)
+    comment = models.ForeignKey('Comment', related_name='likes', on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey('User', related_name='likes', on_delete=models.CASCADE, null=True, blank=True)
+    created_on = models.DateTimeField(auto_now_add=True,null=True)
+class Comment(models.Model):
+    content = models.TextField(null=True, blank=True)
+    movie = models.ForeignKey('Movie', related_name='comments', on_delete=models.CASCADE, null=True, blank=True)
+    serie = models.ForeignKey('Serie', related_name='comments', on_delete=models.CASCADE, null=True, blank=True)
+    season = models.ForeignKey('Season', related_name='comments', on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey('User', related_name='comments', on_delete=models.CASCADE, null=True, blank=True)
+    created_on = models.DateTimeField(auto_now_add=True,null=True)
 class Keyword(models.Model):
     name = models.CharField(max_length=255,blank=True,null=True)
     movie = models.ForeignKey('Movie', related_name='keywords', on_delete=models.CASCADE, null=True, blank=True)
