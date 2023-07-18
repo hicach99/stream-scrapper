@@ -8,6 +8,18 @@ class KeywordInline(admin.TabularInline):
     model = Keyword
     extra = 1
     fields = ('name',)
+# Notification Start
+class NotificationInline(admin.TabularInline):
+    model = Notification
+    extra = 0
+    fields = ('content','created_on',)
+    readonly_fields=('created_on',)
+# Transaction Start
+class TransactionInline(admin.TabularInline):
+    model = Transaction
+    extra = 0
+    fields = ('amount','status','created_on',)
+    readonly_fields=('created_on',)
 # OtherTitle Start
 class OtherTitleInline(admin.TabularInline):
     model = OtherTitle
@@ -159,11 +171,15 @@ class PlatformAdmin(admin.ModelAdmin):
 # User Admin
 class UserAdmin(admin.ModelAdmin):
     list_display = ('username','email','type','platform')  # Add any other fields you want to display
+    inlines = [TransactionInline,NotificationInline]
+class RequestAdmin(admin.ModelAdmin):
+    list_display = ('tmdb_id','title','type','created_on')  # Add any other fields you want to display
 
 # Display
 admin.site.register(TmdbApi)
 admin.site.register(Platform, PlatformAdmin)
 admin.site.register(User,UserAdmin)
+admin.site.register(Request,RequestAdmin)
 
 admin.site.register(Serie, SerieAdmin)
 admin.site.register(Movie, MovieAdmin)

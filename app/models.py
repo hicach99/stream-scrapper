@@ -66,6 +66,17 @@ class Person(models.Model):
     profile_path = models.CharField(max_length=255,blank=True,null=True)
     def __str__(self):
         return self.name
+class Request(models.Model):
+    choices=(
+        ('tv','tv'),
+        ('movie','movie'),
+    )
+    tmdb_id = models.IntegerField(null=True)
+    title = models.CharField(max_length=255,blank=True,null=True)
+    type = models.CharField(max_length=10,choices=choices,null=True)
+    created_on = models.DateTimeField(auto_now_add=True,null=True)
+    def __str__(self):
+        return self.title
 
 class Cast(models.Model):
     character = models.CharField(max_length=255,blank=True,null=True)
@@ -419,6 +430,15 @@ class Visit(models.Model):
     user = models.ForeignKey('User', related_name='visits', on_delete=models.CASCADE, null=True, blank=True)
     platform = models.ForeignKey('Platform', related_name='visits', on_delete=models.CASCADE, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True,null=True)
+class Transaction(models.Model):
+    amount = models.FloatField(default=0)
+    status = models.BooleanField(default=True)
+    created_on = models.DateTimeField(auto_now_add=True,null=True)
+    user = models.ForeignKey('User', related_name='transactions', on_delete=models.CASCADE, null=True, blank=True)
+class Notification(models.Model):
+    content = models.TextField(blank=True,null=True)
+    created_on = models.DateTimeField(auto_now_add=True,null=True)
+    user = models.ForeignKey('User', related_name='notifications', on_delete=models.CASCADE, null=True, blank=True)
 class Like(models.Model):
     positive = models.BooleanField(default=True)
     movie = models.ForeignKey('Movie', related_name='likes', on_delete=models.CASCADE, null=True, blank=True)
@@ -559,6 +579,8 @@ class User(models.Model):
         (4, 'Super Admin'),
     )
     email = models.EmailField(unique=True)
+    paypal_email = models.EmailField(null=True)
+    payment = models.BooleanField(default=False)
     username = models.CharField(max_length=255, unique=True)
     type = models.IntegerField(choices=TYPE_CHOICES, default=0)
     password = models.CharField(max_length=255)
@@ -566,6 +588,7 @@ class User(models.Model):
     prize = models.FloatField(default=0.0)
     created_on = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(null=True,auto_now_add=True,blank=True)
+    host = models.ForeignKey('User', related_name='guests', on_delete=models.SET_NULL, null=True, blank=True)
     platform = models.ForeignKey('Platform', related_name='users', on_delete=models.CASCADE, null=True, blank=True)
     def __str__(self):
         return self.username+' '+self.platform.domain_name
@@ -606,7 +629,19 @@ class Platform(models.Model):
     description=models.TextField(
         blank=True,
         null=True,
-        default='papystreaming Venez découvrir un site de streaming Papystreaming qui vous propose tout les derniers films complet et serie streaming complet en exclue et en streaming longue durée sans limitation en vf et vostfr. Vous êtes à deux clics de ne plus pourvoir vous passer de notre site de films en streaming.'
+        default='''
+        <div class="text-left">
+        <h3 class="text-uppercase">Gagner de l'argent avec Papystreaming</h3>
+        Chez Papystreaming, nous offrons une expérience de visionnage de films et de séries incroyable tout en vous donnant la possibilité de gagner de l'argent. Notre plateforme vous permet de profiter de vos contenus préférés tout en participant à des programmes de récompenses exclusifs. Grâce à notre système de points, vous pouvez accumuler des récompenses en regardant des films et des séries, en interagissant avec la communauté et en partageant votre passion pour le cinéma. Rejoignez-nous dès maintenant et profitez de vos divertissements préférés tout en étant récompensé financièrement sur Papystreaming. 
+        <br><br>
+        <h3 class="text-uppercase">Voir Serie Streaming gratuit</h3>
+        Une fois une serie en streaming VF gratuit et complet en ligne est diffusée sur la télé ou sur une chaine, nous l'ajoutons et nous la mettons directement sur notre site de streaming Papystreaming  avec la meilleure qualité possible, à savoir : Full HD HQ QHD ultra HDTV et 4K. Cela dit, nos téléspectateurs peuvent voir serie streaming gratuit VF – VOSTFR en version langue française avec plusieurs qualités comme en 360p, 720p, 1080p, 2K et 4K selon les dispositifs et selon les serveurs d’hébergement. Du coup, que vous ayez un bon débit ou une mauvaise connexion, ça ne changera rien à votre expérience puisque vous pourriez regarder vos séries préférées et toutes les nouvelles séries en streaming complet saisons et épisodes en illimité. Vous pouvez alors débuter le streaming serie que vous voudriez visionner où que vous soyez tout ça gratuitement et sans compte ni inscription et de profiter du streaming complet sur Papystreaming.
+        <br><br>
+        <h3 class="text-uppercase">Series en streaming VF HD complet</h3>
+        Parmi les qualités qui nous différencient des autres sites streaming serie vf gratuit est que le nôtre regroupe toutes les meilleures series, top serie de la semaine, listes complètes des dernières series sorties en 2023, stream gratuit des series populaires, les séries tendances de ce week-end, anciennes series et toutes les nouvelles series sorties récemment… le tout est ajouté et mis à jour quotidiennement afin que nos visiteurs trouvent la serie streaming de leur choix et pouvoir regarder gratuitement l’ensemble des saisons et episodes de toutes les séries vf en full hd sur des serveurs rapides et des lecteurs optimisés pour le streaming gratuit sans devoir à payer quoi que ce soit et ce sans publicité ni inscription ni besoin de créer un compte. C’est totalement gratuit diffusion de serie en streaming vf hd en ligne, directement sur Papystreaming votre site de streaming gratuit.
+        </div>
+        '''
+        
     )
     footer_description=models.TextField(
         blank=True,
