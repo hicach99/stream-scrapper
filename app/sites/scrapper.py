@@ -5,14 +5,14 @@ import platform
 os_type = platform.system()
 chromedriver="chromedriver.exe" if os_type == 'Windows' else 'chromedriver'
 validating_urls=['Streaming','streaming', 'saison', 'Saison', 'vf hd', 'Complet HD']
-run_in_background=True
+run_in_background=False
 use_subprocess=True
 
 def init_driver():
     driver = uc.Chrome(
         use_subprocess=use_subprocess,
         headless=run_in_background,
-        driver_executable_path= str(settings.BASE_DIR / chromedriver)
+        #driver_executable_path= str(settings.BASE_DIR / chromedriver)
     )
     return driver
 

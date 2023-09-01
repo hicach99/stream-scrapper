@@ -3,13 +3,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # DATABASE info
 use_external_database=True
-use_host_user=False
+use_host_user=True
 ## if  use_external_database is True we use external_database_info else we create sqlite database 'db.sqlite3'
 if use_external_database:
-    host_user = 'cpasmieux'+'_' # None
+    host_user = 'filmvf'+'_' # None
     database_info = {
         'ENGINE': 'mysql.connector.django',
-        'HOST': 'localhost',#'67.211.211.194',
+        'HOST': '67.211.211.194',
         'PORT': 3306,
         'NAME': (host_user if use_host_user else '') + 'streaming_db' ,  
         'USER': (host_user if use_host_user else '') + 'streaming_db',  

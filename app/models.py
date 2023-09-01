@@ -46,7 +46,7 @@ class Video(models.Model):
     serie = models.ForeignKey('Serie', related_name='videos', blank=True, on_delete=models.CASCADE,null=True)
     @classmethod
     def save_if_not_exists(cls, videos_array,movie=None,serie=None):
-        for v in videos_array[:10]:
+        for v in videos_array:
             try:
                 video=cls.objects.get(key=v.key)
             except:
@@ -85,25 +85,28 @@ class Cast(models.Model):
     series = models.ManyToManyField('Serie', related_name='casts', blank=True)
     @classmethod
     def save_if_not_exists(cls, casts_array,movie=None,serie=None):
-        for c in casts_array[:10]:
-            try:
-                cast=cls.objects.get(character=c.character,person__id=c.id)
-            except:
+        try:
+            for c in casts_array:
                 try:
-                    person=Person.objects.get(id=c.id)
+                    cast=cls.objects.get(character=c.character,person__id=c.id)
                 except:
-                    person=Person.objects.create(id=c.id,name=c.name,popularity=c.popularity,profile_path=c.profile_path)
                     try:
-                        person.gender=c.gender
+                        person=Person.objects.get(id=c.id)
                     except:
-                        pass
-                    person.save()
-                cast=cls.objects.create(person=person, character=c.character)
-            cast.save()
-            if movie and movie not in cast.movies.all():
-                cast.movies.add(movie)
-            elif serie and serie not in cast.series.all():
-                cast.series.add(serie)
+                        person=Person.objects.create(id=c.id,name=c.name,popularity=c.popularity,profile_path=c.profile_path)
+                        try:
+                            person.gender=c.gender
+                        except:
+                            pass
+                        person.save()
+                    cast=cls.objects.create(person=person, character=c.character)
+                cast.save()
+                if movie and movie not in cast.movies.all():
+                    cast.movies.add(movie)
+                elif serie and serie not in cast.series.all():
+                    cast.series.add(serie)
+        except:
+            print(casts_array)
     def __str__(self):
         return self.person.name+' As '+self.character
     
