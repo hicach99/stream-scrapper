@@ -122,7 +122,7 @@ def load_movies_page(driver : webdriver.Chrome,page_link : str):
         if not searched_movie:
             tmdb_movie=search_select_movie(title,year)
         if searched_movie or tmdb_movie:
-            #try:
+            try:
                 if not searched_movie:
                     try:
                         movie=Movie.objects.get(id=tmdb_movie.id)
@@ -137,9 +137,9 @@ def load_movies_page(driver : webdriver.Chrome,page_link : str):
                     movie=searched_movie
                 load_movie_links(driver, movie,True)
                 print(f'[+] the movie {i+1}: {title} was loaded successfully')
-            #except Exception as e:
-                #add_message_to_file('failed_page_movies.txt',f'{title}: {movies_links[i]} - {e}')
-                #print(f'[-] error loading the movie: {title} due to: {e}')
+            except Exception as e:
+                add_message_to_file('failed_page_movies.txt',f'{title}: {movies_links[i]} - {e}')
+                print(f'[-] error loading the movie: {title} due to: {e}')
         else:
             add_message_to_file('failed_page_movies.txt',f'{title}: {movies_links[i]} - no tmdb movie found')
             print(f'[-] error loading the movie: {title} due to: no tmdb movie found')
@@ -207,13 +207,13 @@ def load_series_page(driver : webdriver.Chrome,page_link : str):
 def load_movies_pages(driver : webdriver.Chrome, pages_link : str, start: int, end:int, asc:bool):
     pages_range = range(start, end+1) if asc else range(end, start-1, -1)
     for i in pages_range:
-            page_link=(pages_link if pages_link[-1]=='/' else pages_link+'/') + str(i)
-        #try:
+        page_link=(pages_link if pages_link[-1]=='/' else pages_link+'/') + str(i)
+        try:
             load_movies_page(driver,page_link)
             print(f'[+] page {i} was loaded successfully')
-        #except Exception as e:
-            #add_message_to_file('failed_pages.txt',f'page {i}:{page_link} - {e}')
-            #print(f'[-] error loading page {i} due to: {e}')
+        except Exception as e:
+            add_message_to_file('failed_pages.txt',f'page {i}:{page_link} - {e}')
+            print(f'[-] error loading page {i} due to: {e}')
 def load_series_pages(driver : webdriver.Chrome, pages_link : str, start: int, end:int, asc:bool):
     pages_range = range(start, end+1) if asc else range(end, start-1, -1)
     for i in pages_range:

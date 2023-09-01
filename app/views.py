@@ -98,8 +98,8 @@ def load_page(request,model):
     return redirect(f'admin:app_{model}_changelist')
 
 def load_pages(request,model):
-        driver=None
-    #try:
+    driver=None
+    try:
         if request.method=='POST':
             pages_link,start,end,asc=request.POST['pages_link'],int(request.POST['start']),int(request.POST['end']),True if request.POST['order'] == 'asc' else False
             driver=init_driver()
@@ -111,10 +111,10 @@ def load_pages(request,model):
             messages.success(request, f'{model}s page was loaded successful!')
         else:
             raise Exception("method was not POST method")
-    #except Exception as e:
-        #messages.error(request, f'{model}s pages was not loaded due to: {e} in {get_exception_details(e)}')
-        if driver:driver.quit()
-        return redirect(f'admin:app_{model}_changelist')
+    except Exception as e:
+        messages.error(request, f'{model}s pages was not loaded due to: {e} in {get_exception_details(e)}')
+    if driver:driver.quit()
+    return redirect(f'admin:app_{model}_changelist')
 
 def update_data(request,model_name):
     try:
