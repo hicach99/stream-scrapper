@@ -86,7 +86,7 @@
                         alert('Please enter a valid end page number.');
                         return;
                     }
-                    if(start.value>end.value){
+                    if(parseInt(start.value)>parseInt(end.value)){
                         alert('Start page number should be smaller than End page number.');
                         return;
                     }

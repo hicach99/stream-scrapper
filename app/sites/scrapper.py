@@ -7,6 +7,7 @@ chromedriver="chromedriver.exe" if os_type == 'Windows' else 'chromedriver'
 browser = "chrome-win64/chrome.exe"
 validating_urls=['Streaming','streaming', 'saison', 'Saison', 'vf hd', 'Complet HD']
 run_in_background=False
+run_in_background=False
 use_subprocess=True
 
 def init_driver():
