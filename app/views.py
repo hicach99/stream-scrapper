@@ -27,8 +27,8 @@ scrapper={
             'season':french_stream_bio.load_series_page,
         },
         'load_pages': {
-            'movie':french_stream_bio,
-            'season':french_stream_bio,
+            'movie':french_stream_bio.load_movies_pages,
+            'season':french_stream_bio.load_series_pages,
         },
     }
 }
@@ -46,8 +46,9 @@ banners_models={
 }
 
 def detect_website(link:str):
-    parts=link.split('//')[1].split('/')[0].split('.')
-    return parts[-2]
+    for web in scrapper:
+        if web in link:
+            return  web
 
 def test(request):
     return redirect('/admin')

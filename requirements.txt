@@ -1,6 +1,6 @@
-django
-tmdbv3api
-undetected_chromedriver
-beautifulsoup4
-selenium
-mysql-connector-python==8.0.29
+beautifulsoup4==4.13.3
+Django==5.1.7
+mysql-connector-python==9.2.0
+selenium==4.29.0
+tmdbv3api==1.9.0
+undetected-chromedriver==3.5.5

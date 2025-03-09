@@ -31,6 +31,7 @@ tmdb = TMDb()
 tmdb.language = 'fr'
 movie_getter = Tmdb_Movie()
 serie_getter = Tmdb_Serie()
+
 allow_restoring_TmdbApi=True
 
 try:
@@ -46,7 +47,7 @@ class Video(models.Model):
     serie = models.ForeignKey('Serie', related_name='videos', blank=True, on_delete=models.CASCADE,null=True)
     @classmethod
     def save_if_not_exists(cls, videos_array,movie=None,serie=None):
-        for v in videos_array[:10]:
+        for v in list(videos_array)[:10]:
             try:
                 video=cls.objects.get(key=v.key)
             except:
@@ -85,7 +86,7 @@ class Cast(models.Model):
     series = models.ManyToManyField('Serie', related_name='casts', blank=True)
     @classmethod
     def save_if_not_exists(cls, casts_array,movie=None,serie=None):
-        for c in casts_array[:10]:
+        for c in list(casts_array)[:10]:
             try:
                 cast=cls.objects.get(character=c.character,person__id=c.id)
             except:
@@ -204,6 +205,11 @@ class Movie(models.Model):
             Keyword.save_if_not_exists(movie.keywords.keywords,movie=curr_movie)
             Cast.save_if_not_exists(movie.casts.cast,movie=curr_movie)
             Director.save_if_not_exists(movie.casts.crew,movie=curr_movie)
+            if not movie.videos.results:
+                tmdb.language = 'en'
+                tmdb.api_key = random.choice(api_keys)
+                movie = movie_getter.details(self.id)
+                tmdb.language = 'fr'
             Video.save_if_not_exists(movie.videos.results,movie=curr_movie)
         else:
             super().save(*args, **kwargs)
@@ -294,6 +300,11 @@ class Serie(models.Model):
             Season.save_if_not_exists(curr_serie,serie.seasons)
             Cast.save_if_not_exists(serie.credits.cast,serie=curr_serie)
             Director.save_if_not_exists(serie.created_by,serie=curr_serie)
+            if not serie.videos.results:
+                tmdb.language = 'en'
+                tmdb.api_key = random.choice(api_keys)
+                serie = serie_getter.details(self.id)
+                tmdb.language = 'fr'
             Video.save_if_not_exists(serie.videos.results,serie=curr_serie)
         else:
             super().save(*args, **kwargs)
