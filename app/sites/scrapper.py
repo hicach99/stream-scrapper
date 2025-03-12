@@ -11,16 +11,14 @@ run_in_background=False
 use_subprocess=True
 
 def init_driver():
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.6167.140 Safari/537.36"
     chrome_options = uc.ChromeOptions()
     chrome_options.add_argument("--start-maximized")
-    chrome_options.add_argument("user-agent={}".format(user_agent))
     driver = uc.Chrome(
         options=chrome_options,
         use_subprocess=use_subprocess,
         headless=run_in_background,
         #driver_executable_path= str(settings.BASE_DIR / chromedriver),
-        browser_executable_path= str(settings.BASE_DIR / browser),
+        #browser_executable_path= str(settings.BASE_DIR / browser),
     )
     stealth(driver,
         languages=["en-US", "en"],
