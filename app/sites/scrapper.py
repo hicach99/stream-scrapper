@@ -18,7 +18,7 @@ def init_driver():
         use_subprocess=use_subprocess,
         headless=run_in_background,
         #driver_executable_path= str(settings.BASE_DIR / chromedriver),
-        #browser_executable_path= str(settings.BASE_DIR / browser),
+        browser_executable_path= str(settings.BASE_DIR / browser),
     )
     stealth(driver,
         languages=["en-US", "en"],
