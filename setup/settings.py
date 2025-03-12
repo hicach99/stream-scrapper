@@ -7,11 +7,11 @@ use_external_database=True
 if use_external_database:
     database_info = {
         'ENGINE': 'mysql.connector.django',
-        'HOST': 'localhost',
+        'HOST': '198.251.89.144',
         'PORT': 3306,
-        'NAME': 'streaming_db',  
-        'USER': 'streaming_db',  
-        'PASSWORD': 'streaming_db',  
+        'NAME': 'familystreaming_vip',  
+        'USER': 'familystreaming_vip',  
+        'PASSWORD': 'familystreaming_vip@6621',  
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             'use_pure': True,
