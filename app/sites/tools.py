@@ -79,21 +79,27 @@ def search_select_movie(title:str,d_year:str) -> Movie:
             pass
     if not movies: movies=old_movies
     if movies:
-        titles=[]
-        for movie in movies:
-            try:
-                titles.append(movie.title)
-            except:pass
-        original_titles=[]
-        for movie in movies:
-            try:
-                original_titles.append(movie.original_title)
-            except:pass
-        res=select_highest_match(titles, title)
-        o_res=select_highest_match(original_titles, title)
-        if res[1]>o_res[1]:
-            return movies[res[0]]
-        return movies[o_res[0]]
+        try:
+            titles=[]
+            t_m = []
+            for movie in movies:
+                try:
+                    titles.append(movie.title)
+                    t_m.append(movie)
+                except:pass
+            original_titles=[]
+            ot_m = []
+            for movie in movies:
+                try:
+                    original_titles.append(movie.original_title)
+                    ot_m.append(movie)
+                except:pass
+            res=select_highest_match(titles, title)
+            o_res=select_highest_match(original_titles, title)
+            if res[1]>o_res[1]:
+                return t_m[res[0]]
+            return ot_m[o_res[0]]
+        except: pass
     return None
 def search_select_serie(title:str,season_number:int) -> Serie:
     title,year,sig=process_string(title)
