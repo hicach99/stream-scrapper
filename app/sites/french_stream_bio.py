@@ -17,6 +17,7 @@ vostfr_versions=['vostfr','subfrench']
 page_item_box='a.short-poster.img-box.with-mask'
 page_item_box_title='div.short-title'
 
+
 def get_host(page_link):
     parsed_url = urlparse(page_link)
     return parsed_url.netloc if parsed_url.netloc else parsed_url.path.split('/')[0]
@@ -36,6 +37,7 @@ def validate_link(version : str,default=None):
             return set_link_version(v)
     return default
 def get_year(driver,link):
+    driver.get("https://google.com")
     driver.get(link)
     wait = WebDriverWait(driver, duration)
     wait_until_title_contains(driver, wait)
@@ -44,17 +46,33 @@ def get_year(driver,link):
 # load a movie
 def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
     if not loaded:
+        driver.get("https://google.com")
         driver.get(movie.source_link)
         wait = WebDriverWait(driver, duration)
         wait_until_title_contains(driver, wait)
     html = BeautifulSoup(driver.page_source, 'html.parser')
+
+    skin = html.select_one("#version-switcher-form > input[name='skin_name']")['value']
+    if skin=='VFV1':
+        submit_button = driver.find_element(By.CSS_SELECTOR, "#version-switcher-form > button")
+        submit_button.click()
+        wait = WebDriverWait(driver, duration)
+        wait_until_title_contains(driver, wait)
+        html = BeautifulSoup(driver.page_source, 'html.parser')
+
     movie_quality=html.select_one('#film_quality > a').get_text()
     movie_version=html.select_one('#film_lang > a').get_text()
     movie_links_items=html.select('div.version-option')
+        
     movie_links_versions=[l['data-version'] for l in movie_links_items]
     movie_links_hrefs=[l['data-url'] for l in movie_links_items]
     movie.quality=movie_quality
     movie.save()
+    if not movie_links_items:
+        movie_links_items = html.select('button.player-option')
+        movie_links_hrefs = [l['data-url-default'] for l in movie_links_items]
+        movie_links_versions = [movie_quality * len(movie_links_hrefs)]
+
     content_links,header_links=[],[]
     for i in range(len(movie_links_versions)):
         version = validate_link(movie_links_versions[i],None)
@@ -77,6 +95,7 @@ def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
 # load a season
 def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False, other_seasons = False):
     if not loaded:
+        driver.get("https://google.com")
         driver.get(season.source_link)
         wait = WebDriverWait(driver, duration)
         wait_until_title_contains(driver, wait)
@@ -136,6 +155,7 @@ def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False, oth
 
 # load a movies page
 def load_movies_page(driver : webdriver.Chrome,page_link : str):
+    driver.get("https://google.com")
     driver.get(page_link)
     host = get_host(page_link)
     wait = WebDriverWait(driver, duration)
@@ -164,6 +184,7 @@ def load_movies_page(driver : webdriver.Chrome,page_link : str):
             print(f'[-] error loading the movie: {title} due to: no tmdb movie found')
 # load a series page
 def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = True):
+    driver.get("https://google.com")
     driver.get(page_link)
     host = get_host(page_link)
     wait = WebDriverWait(driver, duration)
@@ -214,7 +235,6 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
     if not other_seasons and len(series_names)>=18:
         parts = page_link.split('/')
         new_link = '/'.join(parts[0:-1]) +'/'+ str(int(parts[-1])+1)
-        print(new_link)
         load_series_page(driver, new_link, other_seasons = False)
 def load_movies_pages(driver : webdriver.Chrome, pages_link : str, start: int, end:int, asc:bool):
     pages_range = range(start, end+1) if asc else range(end, start-1, -1)
@@ -224,7 +244,7 @@ def load_movies_pages(driver : webdriver.Chrome, pages_link : str, start: int, e
             load_movies_page(driver,page_link)
             print(f'[+] page {i} was loaded successfully')
         except Exception as e:
-            add_message_to_file('failed_pages.txt',f'page {i}:{page_link} - {e}')
+            add_message_to_file('failed_movies_pages.txt',f'page {i}:{page_link} - {e}')
             print(f'[-] error loading page {i} due to: {e}', traceback.extract_tb(sys.exc_info()[-1]))
 def load_series_pages(driver : webdriver.Chrome, pages_link : str, start: int, end:int, asc:bool=True):
     pages_range = range(start, end+1) if asc else range(end, start-1, -1)
@@ -234,5 +254,5 @@ def load_series_pages(driver : webdriver.Chrome, pages_link : str, start: int, e
             load_series_page(driver,page_link)
             print(f'[+] page {i} was loaded successfully')
         except Exception as e:
-            add_message_to_file('failed_pages.txt',f'page {i}:{page_link} - {e}')
+            add_message_to_file('failed_series_pages.txt',f'page {i}:{page_link} - {e}')
             print(f'[-] error loading page {i} due to: {e}', traceback.extract_tb(sys.exc_info()[-1]))
