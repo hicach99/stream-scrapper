@@ -13,6 +13,8 @@ use_subprocess=True
 def init_driver():
     chrome_options = uc.ChromeOptions()
     if run_in_background: chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--load-extension='+str(settings.BASE_DIR / 'ublock.crx'))
+    chrome_options.add_argument('--load-extension='+str(settings.BASE_DIR / 'vpn.crx'))
     chrome_options.add_argument("--start-maximized")
     driver = uc.Chrome(
         options=chrome_options,

@@ -18,6 +18,19 @@ page_item_box='a.short-poster.img-box.with-mask'
 page_item_box_title='div.short-title'
 
 
+def connect_vpn(driver):
+    link = "chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/src/popup/popup.html"
+    continue_button = ".intro-steps__btn"
+    connect_button = ".connect-button--disconnected"
+    driver.get(link)
+    wait = WebDriverWait(driver, duration)
+    wait.until("Extension" in driver.title)
+    continue_button = driver.find_element(By.CSS_SELECTOR, continue_button)
+    continue_button.click()
+    continue_button.click()
+    connect_button = driver.find_element(By.CSS_SELECTOR, connect_button)
+    connect_button.click()
+
 def get_host(page_link):
     parsed_url = urlparse(page_link)
     return parsed_url.netloc if parsed_url.netloc else parsed_url.path.split('/')[0]
@@ -37,7 +50,7 @@ def validate_link(version : str,default=None):
             return set_link_version(v)
     return default
 def get_year(driver,link):
-    driver.get("https://google.com")
+    
     driver.get(link)
     wait = WebDriverWait(driver, duration)
     wait_until_title_contains(driver, wait)
@@ -46,7 +59,7 @@ def get_year(driver,link):
 # load a movie
 def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
     if not loaded:
-        driver.get("https://google.com")
+        
         driver.get(movie.source_link)
         wait = WebDriverWait(driver, duration)
         wait_until_title_contains(driver, wait)
@@ -95,7 +108,7 @@ def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
 # load a season
 def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False, other_seasons = False):
     if not loaded:
-        driver.get("https://google.com")
+        
         driver.get(season.source_link)
         wait = WebDriverWait(driver, duration)
         wait_until_title_contains(driver, wait)
@@ -155,7 +168,7 @@ def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False, oth
 
 # load a movies page
 def load_movies_page(driver : webdriver.Chrome,page_link : str):
-    driver.get("https://google.com")
+    
     driver.get(page_link)
     host = get_host(page_link)
     wait = WebDriverWait(driver, duration)
@@ -184,7 +197,7 @@ def load_movies_page(driver : webdriver.Chrome,page_link : str):
             print(f'[-] error loading the movie: {title} due to: no tmdb movie found')
 # load a series page
 def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = True):
-    driver.get("https://google.com")
+    
     driver.get(page_link)
     host = get_host(page_link)
     wait = WebDriverWait(driver, duration)
