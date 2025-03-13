@@ -17,20 +17,6 @@ vostfr_versions=['vostfr','subfrench']
 page_item_box='a.short-poster.img-box.with-mask'
 page_item_box_title='div.short-title'
 
-
-def connect_vpn(driver):
-    link = "chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/src/popup/popup.html"
-    continue_button = ".intro-steps__btn"
-    connect_button = ".connect-button--disconnected"
-    driver.get(link)
-    wait = WebDriverWait(driver, duration)
-    wait.until("Extension" in driver.title)
-    continue_button = driver.find_element(By.CSS_SELECTOR, continue_button)
-    continue_button.click()
-    continue_button.click()
-    connect_button = driver.find_element(By.CSS_SELECTOR, connect_button)
-    connect_button.click()
-
 def get_host(page_link):
     parsed_url = urlparse(page_link)
     return parsed_url.netloc if parsed_url.netloc else parsed_url.path.split('/')[0]
