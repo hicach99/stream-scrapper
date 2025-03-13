@@ -71,10 +71,13 @@ def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
     movie_links_hrefs=[l['data-url'] for l in movie_links_items]
     movie.quality=movie_quality
     movie.save()
-    if not movie_links_items:
-        movie_links_items = html.select('button.player-option')
-        movie_links_hrefs = [l['data-url-default'] for l in movie_links_items]
-        movie_links_versions = [movie_quality * len(movie_links_hrefs)]
+    
+    mli = html.select('button.player-option')
+    mlh = [l['data-url-default'] for l in mli]
+    mlv = [movie_quality * len(mlh)]
+    
+    movie_links_hrefs.extend(mlh)
+    movie_links_versions.extend(mlv)
 
     content_links,header_links=[],[]
     for i in range(len(movie_links_versions)):
