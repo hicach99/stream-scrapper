@@ -2,7 +2,6 @@ from app.models import Episode, Movie, Link, Season, Serie
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from app.sites.scrapper import wait_until_title_contains
@@ -28,23 +27,6 @@ def str_int(s):
     if match:
         return int(match.group())
     return None
-def bypass(driver,link):
-    original_tab = driver.current_window_handle
-    time.sleep(2)
-    driver.execute_script("window.open('https://www.google.com', '_blank');")
-    new_tab = driver.window_handles[-1]
-    driver.switch_to.window(new_tab)
-    driver.get(link)
-    try:
-        checkbox = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, "#uATa8 > div > label > input[type=checkbox]"))
-        )
-        checkbox.click()
-        print("Checkbox clicked successfully.")
-    except Exception as e:
-        print(f"Failed to click the checkbox: {e}")
-    driver.switch_to.window(original_tab)
-    driver.refresh()
 
 def set_link_version(version):
     if version.lower() in vostfr_versions:return 'VOSTFR'
@@ -58,8 +40,7 @@ def get_year(driver,link):
     
     driver.get(link)
     time.sleep(1)
-    if "just a moment" in driver.title.lower():
-        bypass(driver,link)
+
     wait = WebDriverWait(driver, duration)
     wait_until_title_contains(driver, wait)
     html = BeautifulSoup(driver.page_source, 'html.parser')
@@ -70,8 +51,6 @@ def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
         
         driver.get(movie.source_link)
         time.sleep(1)
-        if "just a moment" in driver.title.lower():
-            bypass(driver,movie.source_link)
         wait = WebDriverWait(driver, duration)
         wait_until_title_contains(driver, wait)
     html = BeautifulSoup(driver.page_source, 'html.parser')
@@ -122,8 +101,7 @@ def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False, oth
         
         driver.get(season.source_link)
         time.sleep(1)
-        if "just a moment" in driver.title.lower():
-            bypass(driver,season.source_link)
+
         wait = WebDriverWait(driver, duration)
         wait_until_title_contains(driver, wait)
     
@@ -185,8 +163,7 @@ def load_movies_page(driver : webdriver.Chrome,page_link : str):
     
     driver.get(page_link)
     time.sleep(1)
-    if "just a moment" in driver.title.lower():
-        bypass(driver,page_link)
+
     host = get_host(page_link)
     wait = WebDriverWait(driver, duration)
     wait_until_title_contains(driver, wait)
@@ -217,8 +194,7 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
     
     driver.get(page_link)
     time.sleep(1)
-    if "just a moment" in driver.title.lower():
-        bypass(driver,page_link)
+
     host = get_host(page_link)
     wait = WebDriverWait(driver, duration)
     wait_until_title_contains(driver, wait)
@@ -276,6 +252,7 @@ def load_movies_pages(driver : webdriver.Chrome, pages_link : str, start: int, e
         try:
             load_movies_page(driver,page_link)
             print(f'[+] page {i} was loaded successfully')
+            add_message_to_file('movies_pages.txt',f'[+] movies page {i}')
         except Exception as e:
             add_message_to_file('failed_movies_pages.txt',f'page {i}:{page_link} - {e}')
             print(f'[-] error loading page {i} due to: {e}', traceback.extract_tb(sys.exc_info()[-1]))
@@ -286,6 +263,7 @@ def load_series_pages(driver : webdriver.Chrome, pages_link : str, start: int, e
         try:
             load_series_page(driver,page_link)
             print(f'[+] page {i} was loaded successfully')
+            add_message_to_file('series_pages.txt',f'[+] series page {i}')
         except Exception as e:
             add_message_to_file('failed_series_pages.txt',f'page {i}:{page_link} - {e}')
             print(f'[-] error loading page {i} due to: {e}', traceback.extract_tb(sys.exc_info()[-1]))
