@@ -79,8 +79,16 @@ def search_select_movie(title:str,d_year:str) -> Movie:
             pass
     if not movies: movies=old_movies
     if movies:
-        titles=[movie.title for movie in movies]
-        original_titles=[movie.original_title for movie in movies]
+        titles=[]
+        for movie in movies:
+            try:
+                titles.append(movie.title)
+            except:pass
+        original_titles=[]
+        for movie in movies:
+            try:
+                original_titles.append(movie.original_title)
+            except:pass
         res=select_highest_match(titles, title)
         o_res=select_highest_match(original_titles, title)
         if res[1]>o_res[1]:
