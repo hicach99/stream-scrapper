@@ -7,32 +7,16 @@ os_type = platform.system()
 chromedriver="chromedriver.exe" if os_type == 'Windows' else 'chromedriver'
 browser = "chrome-win64/chrome.exe"
 validating_urls=['Streaming','streaming', 'saison', 'Saison', 'vf hd', 'Complet HD']
-run_in_background=True
+run_in_background=False
 use_subprocess=True
 
 def init_driver():
     chrome_options = uc.ChromeOptions()
-    chrome_options.headless=run_in_background
-    chrome_options.add_argument('--headless')
-    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-    chrome_options.add_argument("--disable-infobars")
+    if run_in_background: chrome_options.add_argument('--headless')
     chrome_options.add_argument("--start-maximized")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--disable-extensions")
-    chrome_options.add_argument("--disable-popup-blocking")
-    chrome_options.add_argument("--disable-notifications")
-    chrome_options.add_argument("--disable-logging")
-    chrome_options.add_argument("--log-level=3")
-    chrome_options.add_argument("--remote-debugging-port=9222")
-    chrome_options.add_argument("--window-size=800,600")
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    chrome_options.add_argument(f"--user-agent={user_agent}")
     driver = uc.Chrome(
         options=chrome_options,
         use_subprocess=use_subprocess,
-        #headless=run_in_background
         #driver_executable_path= str(settings.BASE_DIR / chromedriver),
         browser_executable_path= str(settings.BASE_DIR / browser),
     )
