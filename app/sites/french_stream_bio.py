@@ -2,6 +2,7 @@ from app.models import Episode, Movie, Link, Season, Serie
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from app.sites.scrapper import wait_until_title_contains
@@ -29,19 +30,19 @@ def str_int(s):
     return None
 def bypass(driver,link):
     original_tab = driver.current_window_handle
-    driver.execute_script("window.open('');")
+    time.sleep(2)
+    driver.execute_script("window.open('https://www.google.com', '_blank');")
     new_tab = driver.window_handles[-1]
     driver.switch_to.window(new_tab)
     driver.get(link)
     try:
         checkbox = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "#uATa8 > div > label > input[type=checkbox]"))
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "#uATa8 > div > label > input[type=checkbox]"))
         )
         checkbox.click()
         print("Checkbox clicked successfully.")
     except Exception as e:
         print(f"Failed to click the checkbox: {e}")
-    driver.close()
     driver.switch_to.window(original_tab)
     driver.refresh()
 
