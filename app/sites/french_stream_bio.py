@@ -38,8 +38,8 @@ def validate_link(version : str,default=None):
     return default
 def get_year(driver,link):
     
+    driver.get("https://google.com")
     driver.get(link)
-    time.sleep(1)
 
     wait = WebDriverWait(driver, duration)
     wait_until_title_contains(driver, wait)
@@ -49,8 +49,9 @@ def get_year(driver,link):
 def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
     if not loaded:
         
+        driver.get("https://google.com")
         driver.get(movie.source_link)
-        time.sleep(1)
+
         wait = WebDriverWait(driver, duration)
         wait_until_title_contains(driver, wait)
     html = BeautifulSoup(driver.page_source, 'html.parser')
@@ -102,9 +103,8 @@ def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
 def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False, other_seasons = False):
     if not loaded:
         
-        time.sleep(1)
+        driver.get("https://google.com")
         driver.get(season.source_link)
-        time.sleep(1)
 
         wait = WebDriverWait(driver, duration)
         wait_until_title_contains(driver, wait)
@@ -165,8 +165,8 @@ def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False, oth
 # load a movies page
 def load_movies_page(driver : webdriver.Chrome,page_link : str):
     
+    driver.get("https://google.com")
     driver.get(page_link)
-    time.sleep(1)
 
     host = get_host(page_link)
     wait = WebDriverWait(driver, duration)
@@ -196,8 +196,8 @@ def load_movies_page(driver : webdriver.Chrome,page_link : str):
 # load a series page
 def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = True):
     
+    driver.get("https://google.com")
     driver.get(page_link)
-    time.sleep(1)
 
     host = get_host(page_link)
     wait = WebDriverWait(driver, duration)
