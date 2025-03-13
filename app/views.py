@@ -58,7 +58,7 @@ def test(request):
 def load_movie(request,id):
     movie=Movie.objects.get(id=id)
     driver=init_driver()
-    french_stream_bio.connect_vpn(driver)
+    
     website=detect_website(movie.source_link)
     try:
         scrapper[website]['load_movie'](driver,movie)
@@ -71,7 +71,7 @@ def load_movie(request,id):
 def load_season(request,id):
     season=Season.objects.get(id=id)
     driver=init_driver()
-    french_stream_bio.connect_vpn(driver)
+    
     website=detect_website(season.source_link)
     try:
         scrapper[website]['load_season'](driver,season)
@@ -87,7 +87,7 @@ def load_page(request,model):
         if request.method=='POST':
             page_link=request.POST['page_link']
             driver=init_driver()
-            french_stream_bio.connect_vpn(driver)
+            
             website=detect_website(page_link)
             try:
                 scrapper[website]['load_page'][model](driver,page_link)
@@ -107,7 +107,7 @@ def load_pages(request,model):
         if request.method=='POST':
             pages_link,start,end,asc=request.POST['pages_link'],int(request.POST['start']),int(request.POST['end']),True if request.POST['order'] == 'asc' else False
             driver=init_driver()
-            french_stream_bio.connect_vpn(driver)
+            
             website=detect_website(pages_link)
             try:
                 scrapper[website]['load_pages'][model](driver,pages_link,start,end,asc)
