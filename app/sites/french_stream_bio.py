@@ -28,26 +28,15 @@ def str_int(s):
         return int(match.group())
     return None
 def bypass(driver,link):
-    # Save the current tab's handle
     original_tab = driver.current_window_handle
-
-    # Open a new tab
     driver.execute_script("window.open('');")
-    
-    # Switch to the new tab
     new_tab = driver.window_handles[-1]
     driver.switch_to.window(new_tab)
-    
-    # Navigate to www.example.com
     driver.get(link)
-    
-    # Wait for the checkbox to be present and click it
     try:
-        # Use WebDriverWait to wait for the checkbox to be clickable
         checkbox = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, "#uATa8 > div > label > input[type=checkbox]"))
         )
-        # Click the checkbox
         checkbox.click()
         print("Checkbox clicked successfully.")
     except Exception as e:
@@ -69,7 +58,7 @@ def get_year(driver,link):
     driver.get(link)
     time.sleep(1)
     if "just a moment" in driver.title.lower():
-        pass
+        bypass(driver,link)
     wait = WebDriverWait(driver, duration)
     wait_until_title_contains(driver, wait)
     html = BeautifulSoup(driver.page_source, 'html.parser')
@@ -80,6 +69,8 @@ def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
         
         driver.get(movie.source_link)
         time.sleep(1)
+        if "just a moment" in driver.title.lower():
+            bypass(driver,movie.source_link)
         wait = WebDriverWait(driver, duration)
         wait_until_title_contains(driver, wait)
     html = BeautifulSoup(driver.page_source, 'html.parser')
@@ -130,6 +121,8 @@ def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False, oth
         
         driver.get(season.source_link)
         time.sleep(1)
+        if "just a moment" in driver.title.lower():
+            bypass(driver,season.source_link)
         wait = WebDriverWait(driver, duration)
         wait_until_title_contains(driver, wait)
     
@@ -191,6 +184,8 @@ def load_movies_page(driver : webdriver.Chrome,page_link : str):
     
     driver.get(page_link)
     time.sleep(1)
+    if "just a moment" in driver.title.lower():
+        bypass(driver,page_link)
     host = get_host(page_link)
     wait = WebDriverWait(driver, duration)
     wait_until_title_contains(driver, wait)
@@ -221,6 +216,8 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
     
     driver.get(page_link)
     time.sleep(1)
+    if "just a moment" in driver.title.lower():
+        bypass(driver,page_link)
     host = get_host(page_link)
     wait = WebDriverWait(driver, duration)
     wait_until_title_contains(driver, wait)
