@@ -75,7 +75,7 @@ def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
     mli = html.select('button.player-option')
     mlh = [l['data-url-default'] for l in mli]
     mlv = [movie_quality * len(mlh)]
-    
+
     movie_links_hrefs.extend(mlh)
     movie_links_versions.extend(mlv)
 
@@ -102,6 +102,7 @@ def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
 def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False, other_seasons = False):
     if not loaded:
         
+        time.sleep(1)
         driver.get(season.source_link)
         time.sleep(1)
 

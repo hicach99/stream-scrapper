@@ -63,12 +63,21 @@ def select_highest_match(strings, original):
     return strings.index(highest), map_dic[highest], highest
 def search_select_movie(title:str,d_year:str) -> Movie:
     title,year,sig=process_string(title)
-    movies=old_movies=Movie.search_tmdb(title)
-    movies=[m for m in movies if d_year in m.release_date] 
+    old_movies=Movie.search_tmdb(title)
+    movies = []
+    for m in old_movies:
+        try:
+            if d_year in m.release_date:
+                movies.append(m)
+        except:
+            pass
+    for m in old_movies:
+        try:
+            if year and (year in m.release_date) and (m not in movies):
+                movies.append(m)
+        except:
+            pass
     if not movies: movies=old_movies
-    if year:
-        movies = [movie for movie in movies if year in movie.release_date]
-        if not movies: movies=old_movies
     if movies:
         titles=[movie.title for movie in movies]
         original_titles=[movie.original_title for movie in movies]

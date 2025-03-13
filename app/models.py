@@ -49,13 +49,15 @@ class Video(models.Model):
     def save_if_not_exists(cls, videos_array,movie=None,serie=None):
         for v in list(videos_array)[:10]:
             try:
-                video=cls.objects.get(key=v.key)
-            except:
-                if movie:
-                    video=cls.objects.create(key=v.key, name=v.name, site=v.site, movie=movie)
-                elif serie:
-                    video=cls.objects.create(key=v.key, name=v.name, site=v.site, serie=serie)
-            video.save()
+                try:
+                    video=cls.objects.get(key=v.key)
+                except:
+                    if movie:
+                        video=cls.objects.create(key=v.key, name=v.name, site=v.site, movie=movie)
+                    elif serie:
+                        video=cls.objects.create(key=v.key, name=v.name, site=v.site, serie=serie)
+                video.save()
+            except: pass
     def __str__(self):
         return self.site+': '+self.name
 
