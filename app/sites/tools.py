@@ -22,23 +22,22 @@ def is_list(variable):
     else:
         return False
 
+import re
+
 def process_string(input_string):
-    # Extract the year within parentheses using regex
-    year_match = re.search(r"\((\d{4})\)", input_string)
+    year_match = re.search(r"\((\d{4})\)| - (\d{4})", input_string)
     
-    # Extract the additional text within parentheses using regex
-    additional_text_match = re.search(r"\((.*?)\)", input_string)
+    additional_text_match = re.search(r"\((.*?)\)| - ([^-]+)$", input_string)
     
-    # Extract the main text excluding parentheses and additional text
-    main_text = re.sub(r"\(.*?\)", "", input_string).strip()
+    main_text = re.sub(r"\(.*?\)| - \d{4}| - [^-]+$", "", input_string).strip()
     
     if year_match:
-        year = year_match.group(1)
+        year = year_match.group(1) if year_match.group(1) else year_match.group(2)
     else:
         year = None
     
     if additional_text_match:
-        additional_text = additional_text_match.group(1)
+        additional_text = additional_text_match.group(1) if additional_text_match.group(1) else additional_text_match.group(2)
     else:
         additional_text = None
     
