@@ -268,7 +268,6 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
             try:
                 try:
                     serie=Serie.objects.get(id=tmdb_serie.id)
-                    other_seasons = False
                 except:
                     serie=Serie.objects.create(id=tmdb_serie.id)
                 try:
