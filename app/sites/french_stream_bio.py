@@ -283,10 +283,10 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
                 else:
                     load_season_links(driver,season)
                 print(f'[+] the serie: {title} '+('' if other_seasons else f'season {series_seasons[i]} ')+'was loaded successfully')
+                if other_seasons: finished.append(serie.id)
             except Exception as e:
                 add_message_to_file('failed_page_seasons.txt',f'{title} season {series_seasons[i]}: {series_links[i]} - {e}')
                 print(f'[-] error loading the serie: {title}  '+('' if other_seasons else f'season {series_seasons[i]} ')+ f'due to: {e}', traceback.extract_tb(sys.exc_info()[-1]))
-                if other_seasons: finished.append(serie.id)
         else:
             add_message_to_file('failed_page_seasons.txt',f'{title} season {series_seasons[i]}: {series_links[i]} - no tmdb serie found')
             print(f'[-] error loading the serie: {title} season {series_seasons[i]}  due to: no tmdb serie found')

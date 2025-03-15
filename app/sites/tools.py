@@ -102,17 +102,22 @@ def search_select_movie(title:str,d_year:str) -> Movie:
     return None
 def search_select_serie(title:str,nb_seasons:int) -> Serie:
     title,year,sig=process_string(title)
-    a_series=[Serie.get_tmdb(s.id) for s in Serie.search_tmdb(title)]
+    a_series=[]
+    for s in Serie.search_tmdb(title):
+        try:
+            a_series.append(Serie.get_tmdb(s.id))
+        except:
+            pass
     series = []
     for s in a_series:
         try:
-            if (nb_seasons==18 and s.number_of_seasons>=18) or (nb_seasons<18 and s.number_of_seasons in nb_seasons):
+            if (nb_seasons==18 and int(s.number_of_seasons)>=18) or (nb_seasons<18 and int(s.number_of_seasons) == nb_seasons):
                 series.append(s)
         except: pass
     if not series:
         for s in a_series:
             try:
-                if (nb_seasons==18 and s.number_of_seasons>=18) or (nb_seasons<18 and s.number_of_seasons in [nb_seasons, nb_seasons+1]):
+                if (nb_seasons==18 and int(s.number_of_seasons)>=18) or (nb_seasons<18 and int(s.number_of_seasons) in [nb_seasons, nb_seasons+1]):
                     series.append(s)
             except: pass
     if year:
