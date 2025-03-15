@@ -101,6 +101,23 @@ def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
                 Link.objects.get(embed_link=link.embed_link,movie=movie)
             except:
                 link.save()
+def get_seasons_link(driver : webdriver.Chrome,link : str):
+    driver.uc_open_with_reconnect(link, 4)
+    driver.uc_gui_click_captcha()
+    wait = WebDriverWait(driver, duration)
+    wait_until_title_contains(driver, wait)
+    
+    html = BeautifulSoup(driver.page_source, 'html.parser')
+    skin = html.select_one("#version-switcher-form > input[name='skin_name']")['value']
+    if skin=='VFV1':
+        submit_button = driver.find_element(By.CSS_SELECTOR, "#version-switcher-form > button")
+        submit_button.click()
+        wait = WebDriverWait(driver, duration)
+        wait_until_title_contains(driver, wait)
+        html = BeautifulSoup(driver.page_source, 'html.parser')
+    host = get_host(season.source_link)
+    o_seasons_link = "https://"+host+html.select_one(".collapsible-header > p > a")["href"]
+    return o_seasons_link if o_seasons_link else "https://"+host+html.select_one(".fmain > p > a")["href"]
 # load a season
 def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False, other_seasons = False):
     if not loaded:
@@ -235,7 +252,7 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
     for i, title in enumerate(series_names):
         # number of seasons
         if not sid:
-            other_seasons_link = load_season_links(driver,season,other_seasons=True)
+            other_seasons_link = get_seasons_link(driver,series_links[i])
             try:
                 nb_seasons = get_number_boxes(driver, other_seasons_link+"/page/1")
             except:
