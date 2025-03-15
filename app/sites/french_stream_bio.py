@@ -236,7 +236,10 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
         # number of seasons
         if not sid:
             other_seasons_link = load_season_links(driver,season,other_seasons=True)
-            nb_seasons = get_number_boxes(driver, other_seasons_link+"/page/1")
+            try:
+                nb_seasons = get_number_boxes(driver, other_seasons_link+"/page/1")
+            except:
+                nb_seasons = series_seasons[i]
             tmdb_serie=search_select_serie(title,nb_seasons)
         else:
             tmdb_serie = object()
