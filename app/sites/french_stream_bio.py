@@ -18,6 +18,8 @@ vostfr_versions=['vostfr','subfrench']
 page_item_box='a.short-poster.img-box.with-mask'
 page_item_box_title='div.short-title'
 
+finished = []
+
 class tmd:
     def __init__(self, id):
         self.id = id
@@ -228,7 +230,7 @@ def get_number_boxes(driver, page_link):
     series_items=html.select(page_item_box)
     return len(series_items)
 def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = True, sid = None):
-    
+    global finished
     #driver.get(page_link)
     driver.uc_open_with_reconnect(page_link, 2)
     driver.uc_gui_click_captcha()
@@ -264,7 +266,7 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
             tmdb_serie=search_select_serie(title,nb_seasons)
         else:
             tmdb_serie = tmd(sid)
-        if tmdb_serie:
+        if tmdb_serie and (not tmdb_serie.id in finished):
             try:
                 try:
                     serie=Serie.objects.get(id=tmdb_serie.id)
@@ -284,6 +286,7 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
             except Exception as e:
                 add_message_to_file('failed_page_seasons.txt',f'{title} season {series_seasons[i]}: {series_links[i]} - {e}')
                 print(f'[-] error loading the serie: {title}  '+('' if other_seasons else f'season {series_seasons[i]} ')+ f'due to: {e}', traceback.extract_tb(sys.exc_info()[-1]))
+                if other_seasons: finished.append(serie.id)
         else:
             add_message_to_file('failed_page_seasons.txt',f'{title} season {series_seasons[i]}: {series_links[i]} - no tmdb serie found')
             print(f'[-] error loading the serie: {title} season {series_seasons[i]}  due to: no tmdb serie found')
@@ -303,7 +306,9 @@ def load_movies_pages(driver : webdriver.Chrome, pages_link : str, start: int, e
             add_message_to_file('failed_movies_pages.txt',f'page {i}:{page_link} - {e}')
             print(f'[-] error loading page {i} due to: {e}', traceback.extract_tb(sys.exc_info()[-1]))
 def load_series_pages(driver : webdriver.Chrome, pages_link : str, start: int, end:int, asc:bool=True):
+    global finished
     pages_range = range(start, end+1) if asc else range(end, start-1, -1)
+    finished = []
     for i in pages_range:
         page_link=str(pages_link if pages_link[-1]=='/' else pages_link+'/') + str(i)
         try:
