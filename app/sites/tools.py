@@ -22,8 +22,6 @@ def is_list(variable):
     else:
         return False
 
-import re
-
 def process_string(input_string):
     year_match = re.search(r"\((\d{4})\)| - (\d{4})", input_string)
     
