@@ -100,10 +100,16 @@ def search_select_movie(title:str,d_year:str) -> Movie:
             return ot_m[o_res[0]]
         except: pass
     return None
-def search_select_serie(title:str,season_number:int) -> Serie:
+def search_select_serie(title:str,nb_seasons:int) -> Serie:
     title,year,sig=process_string(title)
-    series=[Serie.get_tmdb(s.id) for s in Serie.search_tmdb(title)]
-    series=[s for s in series if s.number_of_seasons>=season_number]
+    a_series=[Serie.get_tmdb(s.id) for s in Serie.search_tmdb(title)]
+    series = []
+    for s in a_series:
+        try:
+            if (nb_seasons==18 and s.number_of_seasons>=18) or (nb_seasons<18 and s.number_of_seasons == nb_seasons):
+                series.append(s)
+        except: pass
+
     if year:
        series = [serie for serie in series  if year in serie.first_air_date]
     if series:
@@ -114,4 +120,26 @@ def search_select_serie(title:str,season_number:int) -> Serie:
         if res[1]>o_res[1]:
             return series[res[0]]
         return series[o_res[0]]
+    if series:
+        try:
+            titles=[]
+            t_m = []
+            for serie in series:
+                try:
+                    titles.append(serie.name)
+                    t_m.append(serie)
+                except:pass
+            original_titles=[]
+            ot_m = []
+            for serie in series:
+                try:
+                    original_titles.append(serie.original_name)
+                    ot_m.append(serie)
+                except:pass
+            res=select_highest_match(titles, title)
+            o_res=select_highest_match(original_titles, title)
+            if res[1]>o_res[1]:
+                return t_m[res[0]]
+            return ot_m[o_res[0]]
+        except: pass
     return None

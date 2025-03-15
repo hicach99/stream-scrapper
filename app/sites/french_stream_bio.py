@@ -198,7 +198,15 @@ def load_movies_page(driver : webdriver.Chrome,page_link : str):
             add_message_to_file('failed_page_movies.txt',f'{title}: {movies_links[i]} - no tmdb movie found')
             print(f'[-] error loading the movie: {title} due to: no tmdb movie found')
 # load a series page
-def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = True):
+def get_number_boxes(driver, page_link):
+    driver.uc_open_with_reconnect(page_link, 4)
+    driver.uc_gui_click_captcha()
+    wait = WebDriverWait(driver, duration)
+    wait_until_title_contains(driver, wait)
+    html = BeautifulSoup(driver.page_source, 'html.parser')
+    series_items=html.select(page_item_box)
+    return len(series_items)
+def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = True, sid = None):
     
     #driver.get(page_link)
     driver.uc_open_with_reconnect(page_link, 4)
@@ -225,7 +233,14 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
                     series_seasons.append(num)
         except: pass
     for i, title in enumerate(series_names):
-        tmdb_serie=search_select_serie(title,series_seasons[i])
+        # number of seasons
+        if not sid:
+            other_seasons_link = load_season_links(driver,season,other_seasons=True)
+            nb_seasons = get_number_boxes(driver, other_seasons_link+"/page/1")
+            tmdb_serie=search_select_serie(title,nb_seasons)
+        else:
+            tmdb_serie = object()
+            tmdb_serie.id = sid
         if tmdb_serie:
             try:
                 try:
@@ -240,8 +255,7 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
                 season.source_link=series_links[i]
                 season.save()
                 if other_seasons:
-                    other_seasons_link = load_season_links(driver,season,other_seasons=True)
-                    load_series_page(driver, other_seasons_link+"/page/1", other_seasons = False)
+                    load_series_page(driver, other_seasons_link+"/page/1", other_seasons = False, sid = serie.id)
                 else:
                     load_season_links(driver,season)
                 print(f'[+] the serie: {title} '+('' if other_seasons else f'season {series_seasons[i]} ')+'was loaded successfully')
