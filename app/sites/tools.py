@@ -106,10 +106,15 @@ def search_select_serie(title:str,nb_seasons:int) -> Serie:
     series = []
     for s in a_series:
         try:
-            if (nb_seasons==18 and s.number_of_seasons>=18) or (nb_seasons<18 and s.number_of_seasons == nb_seasons):
+            if (nb_seasons==18 and s.number_of_seasons>=18) or (nb_seasons<18 and s.number_of_seasons in nb_seasons):
                 series.append(s)
         except: pass
-
+    if not series:
+        for s in a_series:
+            try:
+                if (nb_seasons==18 and s.number_of_seasons>=18) or (nb_seasons<18 and s.number_of_seasons in [nb_seasons, nb_seasons+1]):
+                    series.append(s)
+            except: pass
     if year:
        series = [serie for serie in series  if year in serie.first_air_date]
     if series:
