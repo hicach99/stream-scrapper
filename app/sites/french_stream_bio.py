@@ -271,7 +271,7 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
     if not other_seasons and len(series_names)>=18:
         parts = page_link.split('/')
         new_link = '/'.join(parts[0:-1]) +'/'+ str(int(parts[-1])+1)
-        load_series_page(driver, new_link, other_seasons = False)
+        load_series_page(driver, new_link, other_seasons = False, sid = sid)
 def load_movies_pages(driver : webdriver.Chrome, pages_link : str, start: int, end:int, asc:bool):
     pages_range = range(start, end+1) if asc else range(end, start-1, -1)
     for i in pages_range:
