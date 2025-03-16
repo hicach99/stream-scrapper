@@ -122,8 +122,13 @@ def get_other_seasons_link(driver : webdriver.Chrome,link : str):
         wait_until_title_contains(driver, wait)
         html = BeautifulSoup(driver.page_source, 'html.parser')
     host = get_host(link)
-    o_seasons_link = "https://"+host+html.select_one(".collapsible-header > p > a")["href"]
-    return o_seasons_link if o_seasons_link else "https://"+host+html.select_one(".fmain > p > a")["href"]
+    try:
+        o_seasons_link = "https://"+host+html.select_one(".collapsible-header > p > a")["href"]
+    except:
+        o_seasons_link = "https://"+host+html.select_one(".fmain > p > a")["href"]
+    finally:
+        pass
+    return o_seasons_link 
 # load a season
 def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False, other_seasons = False):
     if not loaded:
@@ -246,15 +251,13 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
     series_seasons=[]
     for i,item in enumerate(series_items):
         try:
-            num=series_items_names[i].get_text().strip().split(' - ')[1].split(' ')[-1]
+            series_seasons.append(int(series_links[i].split('saison-')[-1].split('-')[0].split('.')[0]))
+        except:
             try:
+                num=series_items_names[i].get_text().strip().split(' - ')[1].split(' ')[-1]
                 series_seasons.append(int(num))
             except:
-                try:
-                    series_seasons.append(int(series_links[i].split('-')[-1].split('.')[0]))
-                except:
-                    series_seasons.append(num)
-        except: pass
+                series_seasons.append(1)
     for i, title in enumerate(series_names):
         # number of seasons
         if not sid:
@@ -275,7 +278,7 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
                 try:
                     season=Season.objects.get(serie=serie,season_number=series_seasons[i])
                 except:
-                    raise Exception(f'No tmdb serie matches: {title}')
+                    raise Exception(f'[-] Number of season unclear for: {title}')
                 season.source_link=series_links[i]
                 season.save()
                 if other_seasons:
