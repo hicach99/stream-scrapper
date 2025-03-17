@@ -226,7 +226,7 @@ def load_movies_page(driver : webdriver.Chrome,page_link : str, page = None):
                 if "invalid session id" in str(e).lower() or 'connection not available' in str(e).lower():
                     sys.exit()
         else:
-            add_message_to_file('failed_page_movies.txt',f'{title}: {movies_links[i]} - no tmdb movie found')
+            add_message_to_file('no_tmdb_movies_movies.txt',f'{title}: {movies_links[i]} - no tmdb movie found')
             print(f'[-] error loading the movie: {title} due to: no tmdb movie found')
 # load a series page
 def get_number_boxes(driver, page_link):
@@ -282,7 +282,7 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
                 try:
                     season=Season.objects.get(serie=serie,season_number=series_seasons[i])
                 except Exception as e:
-                    raise Exception(f'[-] Number of season unclear for: {title} : {e}')
+                    raise Exception(f'[-] Number of season unclear for: {title} page {page}: {e}')
                 season.source_link=series_links[i]
                 season.save()
                 if other_seasons_link and other_seasons:
@@ -298,7 +298,7 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
                     sys.exit()
         else:
             if (not tmdb_serie) or (not tmdb_serie.id in finished):
-                add_message_to_file('failed_page_seasons.txt',f'{title} season {series_seasons[i]}: {series_links[i]} - no tmdb serie found')
+                add_message_to_file('no_tmdb_serie_seasons.txt',f'{title} season {series_seasons[i]}: {series_links[i]} - no tmdb serie found')
                 print(f'[-] error loading the serie: {title} season {series_seasons[i]}  due to: no tmdb serie found')
             else:
                 print(f'[!] info loading the serie: {title} already added')
