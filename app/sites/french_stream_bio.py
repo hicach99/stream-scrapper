@@ -45,7 +45,7 @@ def validate_link(version : str,default=None):
 def get_year(driver,link):
     
     #driver.get(link)
-    driver.uc_open_with_reconnect(link, 2)
+    driver.uc_open_with_reconnect(link, 4)
     driver.uc_gui_click_captcha()
 
     wait = WebDriverWait(driver, duration)
@@ -57,7 +57,7 @@ def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
     if not loaded:
         
         #driver.get(movie.source_link)
-        driver.uc_open_with_reconnect(movie.source_link, 2)
+        driver.uc_open_with_reconnect(movie.source_link, 4)
         driver.uc_gui_click_captcha()
 
         wait = WebDriverWait(driver, duration)
@@ -108,7 +108,7 @@ def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
             except:
                 link.save()
 def get_other_seasons_link(driver : webdriver.Chrome,link : str):
-    driver.uc_open_with_reconnect(link, 2)
+    driver.uc_open_with_reconnect(link, 4)
     driver.uc_gui_click_captcha()
     wait = WebDriverWait(driver, duration)
     wait_until_title_contains(driver, wait)
@@ -135,7 +135,7 @@ def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False, oth
     if not loaded:
         
         #driver.get(season.source_link)
-        driver.uc_open_with_reconnect(season.source_link, 2)
+        driver.uc_open_with_reconnect(season.source_link, 4)
         driver.uc_gui_click_captcha()
 
         wait = WebDriverWait(driver, duration)
@@ -198,7 +198,7 @@ def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False, oth
 def load_movies_page(driver : webdriver.Chrome,page_link : str, page = None):
     
     #driver.get(page_link)
-    driver.uc_open_with_reconnect(page_link, 2)
+    driver.uc_open_with_reconnect(page_link, 4)
     driver.uc_gui_click_captcha()
 
     host = get_host(page_link)
@@ -231,7 +231,7 @@ def load_movies_page(driver : webdriver.Chrome,page_link : str, page = None):
             print(f'[-] error loading the movie: {title} due to: no tmdb movie found')
 # load a series page
 def get_number_boxes(driver, page_link):
-    driver.uc_open_with_reconnect(page_link, 2)
+    driver.uc_open_with_reconnect(page_link, 4)
     driver.uc_gui_click_captcha()
     wait = WebDriverWait(driver, duration)
     wait_until_title_contains(driver, wait)
@@ -241,7 +241,7 @@ def get_number_boxes(driver, page_link):
 def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = True, sid = None,page = None):
     global finished
     #driver.get(page_link)
-    driver.uc_open_with_reconnect(page_link, 2)
+    driver.uc_open_with_reconnect(page_link, 4)
     driver.uc_gui_click_captcha()
 
     host = get_host(page_link)
