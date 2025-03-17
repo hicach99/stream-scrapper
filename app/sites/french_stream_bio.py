@@ -297,7 +297,7 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
                 if "invalid session id" in str(e).lower() or 'connection not available' in str(e).lower():
                     sys.exit()
         else:
-            if not tmdb_serie.id in finished:
+            if (not tmdb_serie) or (not tmdb_serie.id in finished):
                 add_message_to_file('failed_page_seasons.txt',f'{title} season {series_seasons[i]}: {series_links[i]} - no tmdb serie found')
                 print(f'[-] error loading the serie: {title} season {series_seasons[i]}  due to: no tmdb serie found')
             else:
