@@ -125,9 +125,10 @@ def get_other_seasons_link(driver : webdriver.Chrome,link : str):
     try:
         o_seasons_link = "https://"+host+html.select_one(".collapsible-header > p > a")["href"]
     except:
-        o_seasons_link = "https://"+host+html.select_one(".fmain > p > a")["href"]
-    finally:
-        pass
+        try:
+            o_seasons_link = "https://"+host+html.select_one(".fmain > p > a")["href"]
+        except:
+            o_seasons_link = None
     return o_seasons_link 
 # load a season
 def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False, other_seasons = False):
@@ -194,7 +195,7 @@ def load_season_links(driver : webdriver.Chrome,season: Season,loaded=False, oth
         except:pass
 
 # load a movies page
-def load_movies_page(driver : webdriver.Chrome,page_link : str):
+def load_movies_page(driver : webdriver.Chrome,page_link : str, page = None):
     
     #driver.get(page_link)
     driver.uc_open_with_reconnect(page_link, 2)
@@ -218,10 +219,12 @@ def load_movies_page(driver : webdriver.Chrome,page_link : str):
                 except:
                     movie=Movie.objects.create(id=tmdb_movie.id,source_link=movies_links[i])
                 load_movie_links(driver, movie,True)
-                print(f'[+] the movie: {title} was loaded successfully')
+                print(f'[+] the movie: {title} page {page} was loaded successfully')
             except Exception as e:
-                add_message_to_file('failed_page_movies.txt',f'{title}: {movies_links[i]} - {e}')
-                print(f'[-] error loading the movie: {title} due to: {e}')
+                add_message_to_file('failed_page_movies.txt',f'{page}: {title}: {movies_links[i]} - {e}: ' + str(traceback.extract_tb(sys.exc_info()[-1])) )
+                print(f'[-] error loading the movie: {title} page {page} due to: {e}:',traceback.extract_tb(sys.exc_info()[-1]))
+                if "invalid session id" in str(e).lower() or 'connection not available' in str(e).lower():
+                    sys.exit()
         else:
             add_message_to_file('failed_page_movies.txt',f'{title}: {movies_links[i]} - no tmdb movie found')
             print(f'[-] error loading the movie: {title} due to: no tmdb movie found')
@@ -234,7 +237,7 @@ def get_number_boxes(driver, page_link):
     html = BeautifulSoup(driver.page_source, 'html.parser')
     series_items=html.select(page_item_box)
     return len(series_items)
-def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = True, sid = None):
+def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = True, sid = None,page = None):
     global finished
     #driver.get(page_link)
     driver.uc_open_with_reconnect(page_link, 2)
@@ -260,13 +263,14 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
                 series_seasons.append(1)
     for i, title in enumerate(series_names):
         # number of seasons
+        other_seasons_link = None
         if not sid:
             other_seasons_link = get_other_seasons_link(driver,series_links[i])
             try:
                 nb_seasons = get_number_boxes(driver, other_seasons_link+"/page/1")
             except:
                 nb_seasons = series_seasons[i]
-            tmdb_serie=search_select_serie(title,nb_seasons)
+            tmdb_serie=search_select_serie(title,nb_seasons if other_seasons_link else series_seasons[i])
         else:
             tmdb_serie = tmd(sid)
         if tmdb_serie and (not tmdb_serie.id in finished):
@@ -277,37 +281,45 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
                     serie=Serie.objects.create(id=tmdb_serie.id)
                 try:
                     season=Season.objects.get(serie=serie,season_number=series_seasons[i])
-                except:
-                    raise Exception(f'[-] Number of season unclear for: {title}')
+                except Exception as e:
+                    raise Exception(f'[-] Number of season unclear for: {title} : {e}')
                 season.source_link=series_links[i]
                 season.save()
-                if other_seasons:
-                    load_series_page(driver, other_seasons_link+"/page/1", other_seasons = False, sid = serie.id)
+                if other_seasons_link and other_seasons:
+                    load_series_page(driver, other_seasons_link+"/page/1", other_seasons = False, sid = serie.id, page=page)
                 else:
                     load_season_links(driver,season)
-                print(f'[+] the serie: {title} '+('' if other_seasons else f'season {series_seasons[i]} ')+'was loaded successfully')
+                print(f'[+] the serie: {title} page {page} '+('' if other_seasons else f'season {series_seasons[i]} ')+'was loaded successfully')
                 if other_seasons: finished.append(serie.id)
             except Exception as e:
-                add_message_to_file('failed_page_seasons.txt',f'{title} season {series_seasons[i]}: {series_links[i]} - {e}')
-                print(f'[-] error loading the serie: {title}  '+('' if other_seasons else f'season {series_seasons[i]} ')+ f'due to: {e}', traceback.extract_tb(sys.exc_info()[-1]))
+                add_message_to_file('failed_page_seasons.txt',f'{page}: {title} season {series_seasons[i]}: {series_links[i]} - {e}: ' + str(traceback.extract_tb(sys.exc_info()[-1])) )
+                print(f'[-] error loading the serie: {title} page {page} '+('' if other_seasons else f'season {series_seasons[i]} ')+ f'due to: {e}:', traceback.extract_tb(sys.exc_info()[-1]))
+                if "invalid session id" in str(e).lower() or 'connection not available' in str(e).lower():
+                    sys.exit()
         else:
-            add_message_to_file('failed_page_seasons.txt',f'{title} season {series_seasons[i]}: {series_links[i]} - no tmdb serie found')
-            print(f'[-] error loading the serie: {title} season {series_seasons[i]}  due to: no tmdb serie found')
+            if not tmdb_serie.id in finished:
+                add_message_to_file('failed_page_seasons.txt',f'{title} season {series_seasons[i]}: {series_links[i]} - no tmdb serie found')
+                print(f'[-] error loading the serie: {title} season {series_seasons[i]}  due to: no tmdb serie found')
+            else:
+                print(f'[!] info loading the serie: {title} already added')
+
     if not other_seasons and len(series_names)>=18:
         parts = page_link.split('/')
         new_link = '/'.join(parts[0:-1]) +'/'+ str(int(parts[-1])+1)
-        load_series_page(driver, new_link, other_seasons = False, sid = sid)
+        load_series_page(driver, new_link, other_seasons = False, sid = sid, page=page)
 def load_movies_pages(driver : webdriver.Chrome, pages_link : str, start: int, end:int, asc:bool):
     pages_range = range(start, end+1) if asc else range(end, start-1, -1)
     for i in pages_range:
         page_link=(pages_link if pages_link[-1]=='/' else pages_link+'/') + str(i)
         try:
-            load_movies_page(driver,page_link)
+            load_movies_page(driver,page_link,page = i)
             print(f'[+] page {i} was loaded successfully')
             add_message_to_file('movies_pages.txt',f'[+] movies page {i}')
         except Exception as e:
-            add_message_to_file('failed_movies_pages.txt',f'page {i}:{page_link} - {e}')
-            print(f'[-] error loading page {i} due to: {e}', traceback.extract_tb(sys.exc_info()[-1]))
+            add_message_to_file('failed_movies_pages.txt',f'page {i}:{page_link} - {e}: ' + str(traceback.extract_tb(sys.exc_info()[-1])) )
+            print(f'[-] error loading page {i} due to: {e}:', traceback.extract_tb(sys.exc_info()[-1]))
+            if "invalid session id" in str(e).lower():
+                sys.exit()
 def load_series_pages(driver : webdriver.Chrome, pages_link : str, start: int, end:int, asc:bool=True):
     global finished
     pages_range = range(start, end+1) if asc else range(end, start-1, -1)
@@ -315,9 +327,11 @@ def load_series_pages(driver : webdriver.Chrome, pages_link : str, start: int, e
     for i in pages_range:
         page_link=str(pages_link if pages_link[-1]=='/' else pages_link+'/') + str(i)
         try:
-            load_series_page(driver,page_link)
+            load_series_page(driver,page_link,page = i)
             print(f'[+] page {i} was loaded successfully')
             add_message_to_file('series_pages.txt',f'[+] series page {i}')
         except Exception as e:
-            add_message_to_file('failed_series_pages.txt',f'page {i}:{page_link} - {e}')
-            print(f'[-] error loading page {i} due to: {e}', traceback.extract_tb(sys.exc_info()[-1]))
+            add_message_to_file('failed_series_pages.txt',f'page {i}:{page_link} - {e}: ' + str(traceback.extract_tb(sys.exc_info()[-1])) )
+            print(f'[-] error loading page {i} due to: {e}:', traceback.extract_tb(sys.exc_info()[-1]))
+            if "invalid session id" in str(e).lower():
+                sys.exit()
