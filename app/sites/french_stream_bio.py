@@ -224,6 +224,7 @@ def load_movies_page(driver : webdriver.Chrome,page_link : str, page = None):
                 add_message_to_file('failed_page_movies.txt',f'{page}: {title}: {movies_links[i]} - {e}: ' + str(traceback.extract_tb(sys.exc_info()[-1])) )
                 print(f'[-] error loading the movie: {title} page {page} due to: {e}:',traceback.extract_tb(sys.exc_info()[-1]))
                 if "invalid session id" in str(e).lower() or 'connection not available' in str(e).lower():
+                    add_message_to_file('movies_page_reached.txt',f'{page}')
                     sys.exit()
         else:
             add_message_to_file('no_tmdb_movies_movies.txt',f'{title}: {movies_links[i]} - no tmdb movie found')
@@ -295,6 +296,7 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
                 add_message_to_file('failed_page_seasons.txt',f'{page}: {title} season {series_seasons[i]}: {series_links[i]} - {e}: ' + str(traceback.extract_tb(sys.exc_info()[-1])) )
                 print(f'[-] error loading the serie: {title} page {page} '+('' if other_seasons else f'season {series_seasons[i]} ')+ f'due to: {e}:', traceback.extract_tb(sys.exc_info()[-1]))
                 if "invalid session id" in str(e).lower() or 'connection not available' in str(e).lower():
+                    add_message_to_file('series_page_reached.txt',f'{page}')
                     sys.exit()
         else:
             if (not tmdb_serie) or (not tmdb_serie.id in finished):
@@ -319,6 +321,7 @@ def load_movies_pages(driver : webdriver.Chrome, pages_link : str, start: int, e
             add_message_to_file('failed_movies_pages.txt',f'page {i}:{page_link} - {e}: ' + str(traceback.extract_tb(sys.exc_info()[-1])) )
             print(f'[-] error loading page {i} due to: {e}:', traceback.extract_tb(sys.exc_info()[-1]))
             if "invalid session id" in str(e).lower():
+                add_message_to_file('series_page_reached.txt',f'{i}')
                 sys.exit()
 def load_series_pages(driver : webdriver.Chrome, pages_link : str, start: int, end:int, asc:bool=True):
     global finished
@@ -334,4 +337,5 @@ def load_series_pages(driver : webdriver.Chrome, pages_link : str, start: int, e
             add_message_to_file('failed_series_pages.txt',f'page {i}:{page_link} - {e}: ' + str(traceback.extract_tb(sys.exc_info()[-1])) )
             print(f'[-] error loading page {i} due to: {e}:', traceback.extract_tb(sys.exc_info()[-1]))
             if "invalid session id" in str(e).lower():
+                add_message_to_file('movies_page_reached.txt',f'{i}')
                 sys.exit()
