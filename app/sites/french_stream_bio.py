@@ -286,10 +286,11 @@ def load_series_page(driver : webdriver.Chrome,page_link : str, other_seasons = 
                     raise Exception(f'[-] Number of season unclear for: {title} page {page}: {e}')
                 season.source_link=series_links[i]
                 season.save()
-                if other_seasons_link and other_seasons:
-                    load_series_page(driver, other_seasons_link+"/page/1", other_seasons = False, sid = serie.id, page=page)
-                else:
-                    load_season_links(driver,season)
+                # if other_seasons_link and other_seasons:
+                #     load_series_page(driver, other_seasons_link+"/page/1", other_seasons = False, sid = serie.id, page=page)
+                # else:
+                #     load_season_links(driver,season)
+                load_season_links(driver,season)
                 print(f'[+] the serie: {title} page {page} '+('' if other_seasons else f'season {series_seasons[i]} ')+'was loaded successfully')
                 if other_seasons: finished.append(serie.id)
             except Exception as e:
