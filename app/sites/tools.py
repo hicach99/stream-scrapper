@@ -119,15 +119,9 @@ def search_select_serie(title:str,nb_seasons:int) -> Serie:
                     series.append(s)
             except: pass
     if year:
-       series = [serie for serie in series  if year in serie.first_air_date]
-    if series:
-        titles=[serie.name for serie in series]
-        original_titles=[serie.original_name for serie in series]
-        res=select_highest_match(titles, title)
-        o_res=select_highest_match(original_titles, title)
-        if res[1]>o_res[1]:
-            return series[res[0]]
-        return series[o_res[0]]
+        series = [serie for serie in series  if year in serie.first_air_date]
+    if not series:
+        series = a_series
     if series:
         try:
             titles=[]

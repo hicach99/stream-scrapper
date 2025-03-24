@@ -10,7 +10,7 @@ if use_external_database:
         'HOST': '198.251.89.144',
         'PORT': 3306,
         'NAME': 'familystreaming_vip',  
-        'USER': 'familystreaming_vip',  
+        'USER': 'familystreaming_vip_1',  
         'PASSWORD': 'familystreaming_vip@6621',  
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
