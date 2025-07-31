@@ -51,7 +51,7 @@ def get_year(driver,link):
     wait = WebDriverWait(driver, duration)
     wait_until_title_contains(driver, wait)
     html = BeautifulSoup(driver.page_source, 'html.parser')
-    return html.select_one('#dle-content > article > div.fmain > div.fcols.fx-row > div.fmid > div.flist.clearfix > ul:nth-child(2) > li:nth-child(3) > span').get_text().strip()
+    return html.select_one('#dle-content > article > div.overall_content > div.fmain > div.fcols.fx-row > div.fmid > div.flist.clearfix > ul:nth-child(2) > li:nth-child(3) > a').get_text().strip()
 # load a movie
 def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
     if not loaded:
@@ -64,26 +64,23 @@ def load_movie_links(driver : webdriver.Chrome,movie: Movie,loaded=False):
         wait_until_title_contains(driver, wait)
     html = BeautifulSoup(driver.page_source, 'html.parser')
 
-    skin = html.select_one("#version-switcher-form > input[name='skin_name']")['value']
-    if skin=='VFV1':
-        submit_button = driver.find_element(By.CSS_SELECTOR, "#version-switcher-form > button")
-        submit_button.click()
-        wait = WebDriverWait(driver, duration)
-        wait_until_title_contains(driver, wait)
-        html = BeautifulSoup(driver.page_source, 'html.parser')
-
     movie_quality=html.select_one('#film_quality > a').get_text()
     movie_version=html.select_one('#film_lang > a').get_text()
     movie_links_items=html.select('div.version-option')
-        
-    movie_links_versions=[l['data-version'] for l in movie_links_items]
-    movie_links_hrefs=[l['data-url'] for l in movie_links_items]
+    movie_links_versions,movie_links_hrefs=[],[]
+    for l in movie_links_items:
+        if ('data-version' in l.attrs) and  ('data-url' in l.attrs):
+            movie_links_versions.append(l['data-version'])
+            movie_links_hrefs.append(l['data-url'])
     movie.quality=movie_quality
     movie.save()
-    
     mli = html.select('button.player-option')
-    mlh = [l['data-url-default'] for l in mli]
-    mlv = [movie_quality * len(mlh)]
+    mlh=[]
+    mlv=[]
+    for l in mli:
+        if 'data-url-default' in l.attrs:
+            mlh.append(l['data-url-default'])
+            mlv.append(movie_quality)
 
     movie_links_hrefs.extend(mlh)
     movie_links_versions.extend(mlv)
